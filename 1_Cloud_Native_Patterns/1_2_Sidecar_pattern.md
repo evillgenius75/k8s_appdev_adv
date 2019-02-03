@@ -6,7 +6,7 @@ For our example main application use a Nodejs Hello World service (evillgenius75
 To add https support I will use Nginx ssl proxy (ployst/nginx-ssl-proxy) container
 ## Deployment
 ### TLS/SSL keys
-First we need to generate TLS certificate keys and add them to Kubernetes secrets. For that I am using script from nginx ssl proxy repository which combine all steps in one:
+First we need to generate TLS certificate keys and add them to Kubernetes secrets. For that use a script from nginx ssl proxy repository which combines all steps in one:
 ```console
 git clone https://github.com/ployst/docker-nginx-ssl-proxy.git
 cd docker-nginx-ssl-proxy
@@ -21,7 +21,7 @@ kubectl create secret generic ssl-key-secret --from-file=proxykey=proxykey --fro
 ```
 
 ### Kubernetes sidecar deployment
-In following configuration I have defined main application container “nodejs-hello” and nginx container “nginx”. Both containers run in the same pod and share pod resources, so in that way implementing sidecar pattern. One thing you want to modify is hostname, I am using not existing hostname appname.example.com for this example.
+In following configuration is defined the main application container “nodejs-hello” and nginx container “nginx”. Both containers run in the same pod and share pod resources, so in that way implementing sidecar pattern. One thing you want to modify is hostname, you can us a non existing hostname appname.example.com for this example.
 
 ```yaml
 apiVersion: apps/v1beta2
@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
       - name: nodejs-hello
-        image: beh01der/web-service-dockerized-example
+        image: evillgenius/nodehello:v1
         ports:
         - containerPort: 3000
       - name: nginx
@@ -83,7 +83,7 @@ NAME                            READY     STATUS    RESTARTS   AGE
 nodejs-hello-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
 ## Testing
-For testing I setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
+For testing setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
 
 ```
 kubectl -n test port-forward <pod> 8043:443

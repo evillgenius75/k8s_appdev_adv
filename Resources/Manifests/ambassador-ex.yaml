@@ -1,0 +1,47 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: ambassador
+  labels:
+    app: ambassador-ex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ambassador-ex
+  template:
+    metadata:
+      labels:
+        app: ambassador-ex
+    spec:
+      containers:
+      - name: app-container
+        image: evillgenius/ambassador-example-app:1.0.0
+        ports:
+        - containerPort: 3000
+      - name: ambassador-container
+        image: evillgenius/ambassador-example-ambassador:1.0.0          
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ambassador-svc
+spec:
+  # Select which pods can be used to handle traffic to this service
+  # based on their labels
+  selector:
+    app: ambassador-ex
+
+  # Expose the service on a static port on each node
+  # so that we can access the service from outside the cluster
+  type: LoadBalancer
+
+  # Ports exposed by the service.
+  ports:
+    # `port` is the port for the service.
+    # `targetPort` is the port for the pods,
+    #  it has to match what's defined in the pod YAML.
+    - port: 80
+      targetPort: 3000

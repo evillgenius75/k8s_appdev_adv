@@ -1,0 +1,53 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: adapter
+  labels:
+    app: adapter-ex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adapter-ex
+  template:
+    metadata:
+      labels:
+        app: adapter-ex
+    spec:
+  # Create a volume called 'shared-logs' that the
+  # app and adapter share.
+      volumes:
+      - name: shared-logs 
+        emptyDir: {}
+      containers:
+      # Main application container
+      - name: app-container
+        image: alpine
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do date > /var/log/top.txt && top -n 1 -b >> /var/log/top.txt; sleep 5;done"]
+  # Mount the pod's shared log file into the app 
+  # container. The app writes logs here.
+        volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log
+
+# Adapter container
+      - name: adapter-container
+        image: alpine
+        command: ["/bin/sh"]
+
+  # A long command doing a simple thing: read the `top.txt` file that the
+  # application wrote to and adapt it to fit the status file format.
+  # Get the date from the first line, write to `status.txt` output file.
+  # Get the first memory usage number, write to `status.txt`.
+  # Get the first CPU usage percentage, write to `status.txt`.
+
+        args: ["-c", "while true; do (cat /var/log/top.txt | head -1 > /var/log/status.txt) && (cat /var/log/top.txt | head -2 | tail -1 | grep
+-o -E '\\d+\\w' | head -1 >> /var/log/status.txt) && (cat /var/log/top.txt | head -3 | tail -1 | grep
+-o -E '\\d+%' | head -1 >> /var/log/status.txt); sleep 5; done"]
+
+
+  # Mount the pod's shared log file into the adapter container.
+        volumeMounts:
+        - name: shared-logs
+          mountPath: /var/log
