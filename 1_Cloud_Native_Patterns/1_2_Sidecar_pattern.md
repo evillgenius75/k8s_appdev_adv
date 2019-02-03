@@ -27,7 +27,7 @@ In following configuration is defined the main application container “nodejs-h
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: nodejs-hello
+  name: sidecar
   labels:
     app: nodejs
     proxy: nginx
@@ -50,7 +50,7 @@ spec:
         image: ployst/nginx-ssl-proxy
         env:
         - name: SERVER_NAME
-          value: "appname.example.com"
+          value: "www.evillgenius.com"
         - name: ENABLE_SSL
           value: "true"
         - name: TARGET_SERVICE
@@ -69,26 +69,26 @@ spec:
 ```
 
 
-Save this file to deployment.yaml and create deployment Kubernetes object:
+Save this file to sidecar-ex.yaml and create deployment Kubernetes object:
 
 ```
-kubectl create -f deployment.yaml
+kubectl create -f sidecar-ex.yaml
 ```
 
-Wait for pods to be Read:
+Wait for pods to be Ready:
 ```console
 kubectl get pods
 
 NAME                            READY     STATUS    RESTARTS   AGE
-nodejs-hello-686bbff8d7-42mcn   2/2       Running   0          1m
+sidecar-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
 ## Testing
 For testing setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
 
 ```
-kubectl -n test port-forward <pod> 8043:443
+kubectl port-forward <pod> 8043:443
 #and in new terminal window run
-kubectl -n test port-forward <pod> 8030:3000
+kubectl port-forward <pod> 8030:3000
 ```
 
 First lets validate that application respond on http and doesn’t respond on https requests
@@ -103,7 +103,7 @@ I am undefined!
 ### Using https
 ```console
 curl -k -H "Host: appname.example.com" https://127.0.0.1:8030/ 
-curl: (35) Server aborted the SSL handshake
+curl: (35) LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 127.0.0.1:8030
 ```
 
 >**Note:** SSL handshake issue is expected as our “legacy” application doesn’t support https and even if it would it must serve https connection on different port than http. The test goal was to demonstrate the response.

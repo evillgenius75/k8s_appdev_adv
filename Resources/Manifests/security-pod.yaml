@@ -1,0 +1,21 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: security-context-pod
+spec:
+  securityContext:
+    # User ID that containers in this pod should use
+    runAsUser: 45
+    # Gropu ID for filesystem access
+    fsGroup: 231
+  volumes:
+    - name: simple-directory
+      emptyDir: {}
+  containers:
+    - name: example-container
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do date >> /etc/directory/file.txt; sleep 5; done"]
+      volumeMounts:
+        - name: simple-directory
+          mountPath: /etc/directory
