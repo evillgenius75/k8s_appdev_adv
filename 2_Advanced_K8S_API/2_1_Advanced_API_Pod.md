@@ -366,8 +366,6 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -463,4 +461,4 @@ Pods which are deleted or unavailable due to a rolling upgrade to an application
 
 When a pod is evicted using the eviction API, it is gracefully terminated
 
-### Lab 2.6 - 
+### Sample 
