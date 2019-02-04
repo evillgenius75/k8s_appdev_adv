@@ -9,6 +9,7 @@ There are three ways to implement these probes. One way is to use HTTP requests,
 ## Readiness Probes
 In this example, we've got a simple web server that starts serving traffic after some delay while the application starts up. If we didn't configure our readiness probe, Kubernetes would either start sending traffic to the container before we're ready, or it would mark the pod as unhealthy and never send it traffic.
 
+###Exercise 2.1 - Readiness Probe
 Let's start with a readiness probe that makes a request to http://
 localhost:8000/ after five seconds, and only looks for one failure before it marks the pod as unhealthy.
 
@@ -71,6 +72,7 @@ Events:
 ## Liveness Probes
 Another useful way to customize when Kubernetes restarts your applications is through liveness probes. Kubernetes will execute a container's liveness probe periodically to check that the container is running correctly. If the probe reports failure, the container is restarted. Otherwise, Kubernetes leaves the container as-is.
 
+### Lab 2.2 Liveness and Readiness Probes combined
 Let's build off the previous example and add a liveness probe for our web server container. Instead of using an httpGet request to probe the container, this time we'll use a command whose exit code indicates whether the container is dead or alive.
 
 ```yaml
@@ -120,6 +122,7 @@ Security contexts generally configure two fields: the user ID that should be use
 
 To illustrate, let's create a pod with a container that writes the current date to a file in a mounted volume every five seconds.
 
+### Lab 2.3 - Pod Security
 ```yaml
 kind: Pod
 apiVersion: v1
@@ -144,7 +147,24 @@ spec:
           mountPath: /etc/directory
 ```
 
-## Resource assignments
+## Configuration through ConfigMaps and Secrets
+
+### ConfigMaps
+
+Many applications require configuration via some combination of config files, command line arguments, and environment variables. These configuration artifacts should be decoupled from image content in order to keep containerized applications portable. The ConfigMap API resource provides mechanisms to inject containers with configuration data while keeping containers agnostic of Kubernetes. ConfigMap can be used to store fine-grained information like individual properties or coarse-grained information like entire config files or JSON blobs.
+
+#### Overview of ConfigMap
+The ConfigMap API resource holds key-value pairs of configuration data that can be consumed in pods or used to store configuration data for system components such as controllers. ConfigMap is similar to Secrets, but designed to more conveniently support working with strings that do not contain sensitive information.
+
+>**Note:** ConfigMaps are not intended to act as a replacement for a properties file. ConfigMaps are intended to act as a reference to multiple properties files. 
+
+## Lab 2.4 - ConfigMap for Redis Cache
+
+Let's us a look at a real-world example: configuring redis using ConfigMap. We want to inject redis with the recommended configuration for using redis as a cache. 
+
+First create a file called redis-config with the following:
+```console
+
 
 # Using Advanced Deployment API Features
 
