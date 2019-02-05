@@ -18,7 +18,6 @@ When updating your deployment with RollingUpdate, there are two useful fields yo
 
 2. maxSurge determines the maximum number of pods you want running in your deployment as it updates. In the previous example, if we specified a maxSurge of 3, Kubernetes could immediately create three copies of the new pod, bringing the total to 13, and then begin killing off the old versions.
 
-
 ## Pod Disruption Budgets
 
 Pods do not disappear until someone (a person or a controller) destroys them, or there is an unavoidable hardware or system software error.
@@ -58,4 +57,4 @@ Pods which are deleted or unavailable due to a rolling upgrade to an application
 
 When a pod is evicted using the eviction API, it is gracefully terminated
 
-### Sample 
+### 
