@@ -57,4 +57,30 @@ Pods which are deleted or unavailable due to a rolling upgrade to an application
 
 When a pod is evicted using the eviction API, it is gracefully terminated
 
-### 
+### Lab 2.6 - Creat ea deployment with replicas, an update strategy and assign a Pod disruption budget
+
+First create a very basic deployment that will deploy an nginx container with nginx 1.7.9
+
+```yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+```
