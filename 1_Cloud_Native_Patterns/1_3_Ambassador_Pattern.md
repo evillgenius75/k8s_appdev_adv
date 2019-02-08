@@ -9,10 +9,10 @@ User request => application => ambassador => external service
 ## Main application
 For our example main application use a Nodejs web service that connects to the external resource via the ambassador, which is essentially a proxy. 
 ## Ambassador container 
-This container is a simple NodeJS web client that returns randomly a different external API endpoint when called bu the main application.
+This container is a simple NodeJS web client that returns a random external API endpoint when called.
 ## Deployment
 ### Kubernetes ambassador deployment
-In following configuration is defined the main application container “app-container” and the ambassador container “ambassador-container”. Both containers run in the same pod and share pod resources including localhost network. 
+The following configuration defines the main application container “app-container” and the ambassador container “ambassador-container”. Both containers run in the same pod and share pod resources including localhost network. 
 
 ```yaml
 apiVersion: apps/v1beta2
@@ -79,7 +79,7 @@ NAME                            READY     STATUS    RESTARTS   AGE
 ambassador-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
 ## Testing
-The manifest included a LoadBalanced service that will expose the app-container port 3000 on port 80 of the Azure Load Balancer. Determine the external IP address of the Load Balancer:
+The manifest included a service of type LoadBalancer which exposes the app-container port 3000 on port 80 of an Azure Load Balancer. Determine the external IP address of the Load Balancer by:
 
 ```console
 kubectl get svc
@@ -88,8 +88,8 @@ NAME             TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)       
 ambassador-svc   LoadBalancer   172.23.186.163   40.117.238.238   80:30429/TCP   5m
 kubernetes       ClusterIP      172.23.0.1       <none>           443/TCP        17d
 ```
-In the example above the output results in an EXTERNAL-IP of 40.117.238.238 listening on port 80. 
->**Note:** Your Eternal IP address will be different. Use your resulting IP address for the test
+In the example above the output shows the ambassador-svc EXTERNAL-IP is 40.117.238.238 and is listening on port 80. 
+>**Note:** Your External IP address will be different so be sure to use your resulting IP address for the test
 
 Now open your browser or from the command line you can curl the public IP
 

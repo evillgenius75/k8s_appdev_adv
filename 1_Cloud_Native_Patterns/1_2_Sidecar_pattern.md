@@ -21,7 +21,7 @@ kubectl create secret generic ssl-key-secret --from-file=proxykey=proxykey --fro
 ```
 
 ### Kubernetes sidecar deployment
-In following configuration is defined the main application container “nodejs-hello” and nginx container “nginx”. Both containers run in the same pod and share pod resources, so in that way implementing sidecar pattern. One thing you want to modify is hostname, you can us a non existing hostname appname.example.com for this example.
+The following configuration defines the main application containers, “nodejs-hello” and nginx container “nginx”. Both containers run in the same pod and share pod resources and serve as an example implementation of the sidecar pattern. One thing you want to modify is hostname, you can us a non existing hostname appname.example.com for this example.
 
 ```yaml
 apiVersion: apps/v1beta2
@@ -83,7 +83,7 @@ NAME                            READY     STATUS    RESTARTS   AGE
 sidecar-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
 ## Testing
-For testing setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
+For testing, setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
 
 ```
 kubectl port-forward <pod> 8043:443
@@ -91,7 +91,7 @@ kubectl port-forward <pod> 8043:443
 kubectl port-forward <pod> 8030:3000
 ```
 
-First lets validate that application respond on http and doesn’t respond on https requests
+First lets validate that application responds on http and doesn’t respond on https requests
 
 
 ### Using http
@@ -106,7 +106,7 @@ curl -k -H "Host: appname.example.com" https://127.0.0.1:8030/
 curl: (35) LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 127.0.0.1:8030
 ```
 
->**Note:** SSL handshake issue is expected as our “legacy” application doesn’t support https and even if it would it must serve https connection on different port than http. The test goal was to demonstrate the response.
+>**Note:** The SSL handshake issue is expected as our “legacy” application doesn’t support https and even if SSL was configured, another port would have to be configured to serve https. The test's goal was to demonstrate the response.
 
 Time to test connection through sidecar nginx ssl proxy
 
