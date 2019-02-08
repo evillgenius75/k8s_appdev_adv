@@ -54,30 +54,26 @@ az servicebus queue authorization-rule create --resource-group sb-external-examp
 export SERVICEBUS_CONNECTION_STRING="$(az servicebus queue authorization-rule keys list --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --name demorule  --queue-name externalq -o json | jq -r .primaryConnectionString)"
 ```
 
-> note: this gives full access to the queue for ease of use of demo.  You should create more fine grained control for each component of your app.  For example the consumer app should only have `Listen` rights and the producer app should only have `Send` rights.
+> Note: this gives full access to the queue for ease of use of demo.  You should create more fine grained control for each component of your app.  For example the consumer app should only have `Listen` rights and the producer app should only have `Send` rights.
 
 ## Setup AKS Cluster
 
 ### Enable Access to Azure Resources
 
-Run the scripts provided to either [enable MSI](https://github.com/Azure/azure-k8s-metrics-adapter#azure-setup), [Azure AD Pod Identity](https://github.com/Azure/azure-k8s-metrics-adapter#azure-setup#using-azure-ad-pod-identity
-) or [configure a Service Principal](https://github.com/Azure/azure-k8s-metrics-adapter/blob/master/README.md#using-azure-ad-application-id-and-secret) with the following environment variables for giving the access to the Service Bus Namespace Insights provider.
+Run the scripts provided to [configure a Service Principal](https://github.com/Azure/azure-k8s-metrics-adapter/blob/master/README.md#using-azure-ad-application-id-and-secret) with the following environment variables for giving the access to the Service Bus Namespace Insights provider.
 
 ### Start the producer
 Make sure you have cloned this repository and are in the folder `samples/servicebus-queue` for remainder of this walkthrough.
 
-Build the project:
-
-```bash
-#build
-go get -u github.com/Azure/azure-service-bus-go
-make
+download the producer app to produce some messages in the queue
+```console
+wget -O producer https://ejvlab110533.blob.core.windows.net/ejvlab/producer
 ```
 
 Run the producer to create a few queue items, then hit `ctl-c` after a few message have been sent to stop it:
 
 ```
-./bin/producer 500
+.producer 500
 ```
 
 Check the queue has values:
@@ -139,11 +135,6 @@ helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --name
 >helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics --set azureAuthentication.method=clientSecret --set azureAuthentication.tenantID=<your tenantid> --set azureAuthentication.clientID=<your clientID> --set azureAuthentication.clientSecret=<your clientSecret> --set azureAuthentication.createSecret=true`
 >```
 
-> Note: if you used [Azure AD Pod Identity](../../README.md#using-azure-ad-pod-identity) you need to use the specific adapter template file that declares the Azure Identity Binding on [Line 49](../../deploy/adapter-aad-pod-identity.yaml#L49) and [Line 61](../../deploy/adapter-aad-pod-identity.yaml#L61).
-> ```bash
-> kubectl apply -f >https://raw.githubusercontent.com/Azure/azure-k8s-metrics-adapter/master/deploy/adapter-aad-pod-identity.yaml
->```
-
 
 Check you can hit the external metric endpoint.  The resources will be empty as it [is not implemented yet](https://github.com/Azure/azure-k8s-metrics-adapter/issues/3) but you should receive a result.
 
@@ -201,7 +192,7 @@ kubectl  get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/default/que
 Put some load on the queue. Note this will add 20,000 message then exit.
 
 ```
-./bin/producer 0
+producer 0
 ```
 
 Now check your queue is loaded:
