@@ -1,8 +1,9 @@
 # Build the Infrastructure needed for todays Exercises
 
 ## Required Tools
-### This entire lab can be completed in cloud shell. If you don't know what cloudshell, or how to set it up, you are probably in the wrong lab.
-### If cloud shell timeouts get your ire up, feel free to install these tools and run the lab locally:  
+This entire lab can be completed in cloud shell. If you don't know what cloudshell, or how to set it up, you are probably in the wrong lab.\
+
+If cloud shell timeouts get your ire up, feel free to install these tools and run the lab locally:  
 * Bash
 * Docker
 * Azure CLI
@@ -34,7 +35,7 @@ aks-nodepool1-38423990-vmss000000   Ready    agent   29d   v1.11.5
 aks-nodepool1-38423990-vmss000001   Ready    agent   29d   v1.11.5
 aks-nodepool1-38423990-vmss000002   Ready    agent   29d   v1.11.5
 ```
-## That will do it, now you are "Ready" - pun intended - for the sultry sounds of Eddie V's voice.
+That will do it, now you are "Ready" - pun intended - for the sultry sounds of Eddie V's voice.
 
 
 
