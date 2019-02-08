@@ -35,4 +35,116 @@ If you disable the ValidatingAdmissionWebhook, you must also disable the Validat
 
 ## Lab 4.1 - Use a MuatatingAdmissionWebhook to make all services tht are of type LoadBalancer to be Internal type
 
+Clone the following repo for the AdmissionController Helm Chart
 
+```console
+git clone https://github.com/evillgenius75/internallb-webhook-admission-controller.git
+
+cd internallb-webhook-admission-controller
+```
+
+Deploy the Helm Chart to your cluster
+
+```console
+helm install --name admission-webhook charts/internallb-webhook-admission-controller
+```
+
+This will create a pod called `admission-webhook-internallb-webhook-admission-controller-*`
+Verify the Pod is running
+
+```console
+kubectl get pods
+```
+
+now deploy the following deployment and service:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: foo-svc
+  labels:
+    app: foo-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: foo-http
+  selector:
+    app: foo-svc
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: foo-svc
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: foo-svc
+    spec:
+      containers:
+      - name: foo-svc
+        image: gcr.io/google_containers/echoserver:1.5
+        ports:
+        - containerPort: 8080
+        env:
+           - name: NODE_NAME
+             valueFrom:
+               fieldRef:
+                 fieldPath: spec.nodeName
+           - name: POD_NAME
+             valueFrom:
+               fieldRef:
+                 fieldPath: metadata.name
+           - name: POD_NAMESPACE
+             valueFrom:
+               fieldRef:
+                 fieldPath: metadata.namespace
+           - name: POD_IP
+             valueFrom:
+               fieldRef:
+                 fieldPath: status.podIP
+```
+
+Notice that the Service type is LoadBalancer which will normally create a Public Facing Load Balancer. Becasue the Admission Controller was crearted in Mutating mode when the Service is deployed it will be mutatedd to automatically add the correct annotation to make the LoadBalancer an Internal LoadBalancer in Azure.
+
+```console
+kubectl get svc -w
+NAME                                                        TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+admission-webhook-internallb-webhook-admission-controller   NodePort       172.23.217.199   <none>        443:32513/TCP   1h
+foo-svc                                                     LoadBalancer   172.23.161.50    172.22.0.97   80:32545/TCP    1h
+kubernetes                                                  ClusterIP      172.23.0.1       <none>        443/TCP         23d
+```
+
+You will notice that at some point the External IP of the foo-svc service will have an IP address on the Subnet Address space of your AKS cluster and not a Public IP. 
+
+You can also get the description of the service and see the proper annotation was created.
+
+```console
+kubectl describe svc foo-svc
+Name:                     foo-svc
+Namespace:                default
+Labels:                   app=foo-svc
+Annotations:              service.beta.kubernetes.io/azure-load-balancer-internal: true
+Selector:                 app=foo-svc
+Type:                     LoadBalancer
+IP:                       172.23.161.50
+LoadBalancer Ingress:     172.22.0.97
+Port:                     foo-http  80/TCP
+TargetPort:               8080/TCP
+NodePort:                 foo-http  32545/TCP
+Endpoints:                172.22.0.16:8080,172.22.0.61:8080
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:
+  Type    Reason                Age   From                Message
+  ----    ------                ----  ----                -------
+  Normal  EnsuringLoadBalancer  64m   service-controller  Ensuring load balancer
+  Normal  EnsuredLoadBalancer   63m   service-controller  Ensured load balancer
+```
+
+Now you policy is applied automatically.
