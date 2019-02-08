@@ -26,7 +26,6 @@ The Horizontal Pod Autoscaler is implemented as a Kubernetes API resource and a 
 ## Lab 3.1 Implement an autoscale based on CPU metric
 
 
-
 ```yaml
 apiVersion: v1
 kind: Service
