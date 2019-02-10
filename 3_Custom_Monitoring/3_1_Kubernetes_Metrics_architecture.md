@@ -38,7 +38,7 @@ cd $GOPATH/src/github.com/Azure/azure-k8s-metrics-adapter/samples/servicebus-que
 ## Setup Service Bus
 Create a service bus in azure:
 
-```console 
+```console
 export SERVICEBUS_NS=sb-external-ns-<your-initials>
 az group create -n sb-external-example -l eastus
 az servicebus namespace create -n $SERVICEBUS_NS -g sb-external-example
