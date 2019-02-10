@@ -40,7 +40,7 @@ spec:
 ```
 Save this file to liveready-pod.yaml and create pod Kubernetes object:
 
-```
+```console
 kubectl create -f liveready-pod.yaml
 ```
 
@@ -115,6 +115,11 @@ spec:
 ```
 Now, delete and recreate the new pod. Then, inspect its event log just as above. We'll see that our changes to the readiness probe have worked, but then the liveness probe finds that the container doesn't have the required file so the container will be killed and restarted.
 
+```console
+kubectl delete pod liveness-readiness-pod
+kubectl apply -f liveready-pod.yaml
+```
+
 ## Pod Security
 A little-used but powerful feature of Kubernetes pods is that you can declare its security context, an object that configures roles and privileges for containers. A security context can be defined at the pod level or at the container level. If the container doesn't declare its own security context, it will inherit from the parent pod.
 
@@ -123,6 +128,8 @@ Security contexts generally configure two fields: the user ID that should be use
 To illustrate, let's create a pod with a container that writes the current date to a file in a mounted volume every five seconds.
 
 ### Lab 2.3 - Pod Security
+Create a pod that defines the runAsUser and the fsGroup ID for all of the containers in the pod
+
 ```yaml
 kind: Pod
 apiVersion: v1
@@ -148,7 +155,7 @@ spec:
 ```
 Save this file to security-pod.yaml and create pod Kubernetes object:
 
-```
+```console
 kubectl create -f security-pod.yaml.yaml
 ```
 
@@ -164,8 +171,9 @@ security-context-pod    1/1     Running   0          19s
 You will need to exec into the pod with an `ls` of the directory and see the properties of the file wher ethe user is UID45 and the FileSystem Group is 213
 ```console
 kubectl exec security-context-pod -- ls -l /etc/directory
+```
 
-##Output
+```output
 total 4
 -rw-r--r--    1 45       231             58 Feb  3 19:07 file.txt
 ```
@@ -279,7 +287,7 @@ Notice that this pod has a ConfigMap volume that places the redis-config key of 
 
 Save this file to secret-mysql.yaml and create pod Kubernetes object:
 
-```
+```console
 kubectl create -f secret-mysql.yaml
 ```
 
@@ -295,11 +303,11 @@ redis                          1/1     Running   0          19s
 
 Use `kubectl exec` to enter the pod and run the `redis-cli` tool to verify that the configuration was correctly applied:
 
-```code
+```console
 kubectl exec -it redis redis-cli
+```
 
-# Output:
-
+```output
 127.0.0.1:6379> CONFIG GET maxmemory
 1) "maxmemory"
 2) "2097152"
@@ -330,8 +338,9 @@ Verify the secret was created and the actual password is not visible
 
 ```console
 kubectl describe secret mysql-password
+```
 
-# Output
+```output
 Name:         mysql-password
 Namespace:    default
 Labels:       <none>
@@ -394,7 +403,7 @@ The preceding YAML file creates a service that allows other Pods in the cluster 
 
 Save this file to secret-mysql.yaml and create pod Kubernetes object:
 
-```
+```console
 kubectl create -f secret-mysql.yaml
 ```
 
@@ -410,7 +419,7 @@ mysql-d4b54994b-7drd6   1/1     Running   0          15m
 
 Run a MySQL client to connect to the server:
 
-```
+```console
 kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -pMySuperSecretPassword
 ```
 

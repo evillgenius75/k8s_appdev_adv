@@ -42,7 +42,7 @@ spec:
 ```
 Save this file to base-deploy.yaml and create pod Kubernetes object:
 
-```
+```console
 kubectl apply -f base-deploy.yaml --record=true
 ```
 
@@ -54,7 +54,7 @@ NAME                                READY     STATUS    RESTARTS   AGE
 nginx-deploy-6bbdfbd484-7x8kp       1/1       Running   0          45s
 ```
 
-ctrl+c to exit the wait state
+`ctrl+c to` exit the wait state
 
 ## Update Strategy
 Other than providing seamless replication and declarative system states, using deployments gives you the ability to update your application with zero downtime and track multiple versions of your deployment environment.
@@ -72,7 +72,7 @@ Let's edit the deployment so that the update strategy is recreate.
 kubectl edit deploy nginx-deploy
 ```
 This will open a VI editor in console. Replace the lines:
-```
+```yaml
 strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -80,19 +80,19 @@ strategy:
     type: RollingUpdate
 ```
 with the lines:
-```
+```yaml
 strategy:
     type: Recreate
 ```
 save the file using vi commands and now inspect the deployment to verify the change was made
 
-```
+```console
 kubetctl get deploy nginx-deploy -o yaml
 ```
 
 Now scale the deployment to 6 replicas
 
-```
+```console
 kubectl scale deploy nginx-deploy --replicas=6 --record=true
 
 kubectl get pods
@@ -107,7 +107,7 @@ nginx-deploy-6bbdfbd484-spmq4       1/1       Running   0          6s
 
 Now we will patch the deployment to have a new version of nginx from 1.7 to 1.9
 
-```
+```console
 kubectl set image deploy nginx-deploy nginx=nginx:1.9 --record=true
 kubectl get pods -w
 ```
@@ -133,14 +133,14 @@ kubectl edit deploy nginx-deploy
 ```
 This will open a VI editor in console. Replace the lines:
 
-```
+```yaml
 strategy:
     type: Recreate
 ```
 
 with the lines:
 
-```
+```yaml
 strategy:
     rollingUpdate:
       maxSurge: 4
@@ -150,13 +150,13 @@ strategy:
 
 save the file using vi commands and now inspect the deployment to verify the change was made
 
-```
+```console
 kubetctl get deploy nginx-deploy -o yaml
 ```
 
 Now we will patch the deployment to have a new version of nginx from 1.9 to 1.10
 
-```
+```console
 kubectl set image deploy nginx-deploy nginx=nginx:1.10 --record=true
 kubectl get pods -w
 ```
@@ -170,7 +170,7 @@ The rollback process in v1 of the Deployment API is now a manual process through
 
 Lets inspect the rollout history and rollback the deployment to use version 1.7 of nginx
 
-```
+```console
 kubectl rollout history deploy nginx-deploy
 
 deployments "nginx-deploy"
@@ -181,7 +181,7 @@ REVISION  CHANGE-CAUSE
 ```
 Now review the revision 1 to verify it will revert the image back to 1.7 of nginx
 
-```
+```console
 kubectl rollout history deploy nginx-deploy --revision=1 --record=true
 
 kubectl describe deploy nginx-deploy
@@ -242,7 +242,7 @@ When a pod is evicted using the eviction API, it is gracefully terminated
 
 First determine which node has the most nginx pods
 
-```
+```console
 kubectl get pods -o wide
 NAME                            READY     STATUS    RESTARTS   AGE       IP            NODE
 nginx-deploy-6bbdfbd484-7d4v8   1/1       Running   0          3m        10.244.1.19   aks-nodepool1-76410264-2
@@ -270,14 +270,16 @@ spec:
 
 Save the files a nginx-pdb.yaml and apply it to the cluster
 
-```
+```console
 kubectl apply -f nginx-pdb.yaml
 ```
 
 Verify that the disruption budget reflects the new state of the deployment
 
-```
+```console
 kubectl get pdb nginx-pdb -o yaml 
+```
+```yaml
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 ...
@@ -298,12 +300,12 @@ status:
   Now drain the node you selected as the one with the most replicas
 >**Note:** You may want to open another browser window with http://shell.azure.com and run the following commands in two seperate shells. Run the watch command first and then drain the node you selected
 
-  ```
+  ```console
   kubectl drain node aks-nodepool1-76410264-0
   ```
 
   Use the watch command to see the updates happen in real time and you will notice that only a sinle container is evicted at a time to preserve the PDB created.
 
-  ```
+  ```console
   watch -d -n 1 kubectl get pods -o wide
   ```

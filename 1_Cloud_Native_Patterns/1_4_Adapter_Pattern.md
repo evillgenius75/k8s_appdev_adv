@@ -69,7 +69,7 @@ spec:
 
 Save this file to adapter-ex.yaml and create deployment Kubernetes object:
 
-```
+```console
 kubectl create -f adapter-ex.yaml
 ```
 
@@ -84,18 +84,20 @@ adapter-5469c8c6f9-cdcpp      2/2     Running   0          5s
 >**NOTE:** The Pod name in the output above is an example. Please use your exact pod name in the steps below
 
 ## Testing
-Once the pod is running:
-   
-### Connect to the application pod
+Once the pod is running connect to the application pod:
+
 ```console
 kubectl exec <your-pod-name> -c app-container -it sh
 ``` 
-### Take a look at what the application is writing
-```   
+
+Take a look at what the application is writing:
+
+```console   
 cat /var/log/top.txt
 ```   
-### Take a look at what the adapter has reformatted it to
-```   
+Take a look at what the adapter has reformatted it to:
+
+```console   
 cat /var/log/status.txt
 ```
 

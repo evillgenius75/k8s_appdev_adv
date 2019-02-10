@@ -67,7 +67,7 @@ spec:
 
 Save this file to ambassador-ex.yaml and create deployment Kubernetes object:
 
-```
+```console
 kubectl create -f ambassador-ex.yaml
 ```
 
@@ -99,19 +99,19 @@ curl 40.117.238.238
 
 Run the command a few times and the output will randomly change
 
->**EXAMPLE OUTPUT**
->
->```
->eddie@Azure:~$ curl 40.117.238.238
->{"page":2,"per_page":3,"total":12,"total_pages":4,"data":[{"id":4,"first_name":"Eve",>"last_name":"Holt",>"avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg"},{"id":5,>"first_name":"Charles","last_name":"Morris",>"avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg"},{"id":6,>"first_name":"Tracey","last_name":"Ramos",>"avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg"}]}
+**EXAMPLE OUTPUT**
 
->```
->eddie@Azure:~$ curl 40.117.238.238
->{
->  "userId": 1,
->  "id": 1,
->  "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
->  "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
->}
-
+```output
+eddie@Azure:~$ curl 40.117.238.238
+{"page":2,"per_page":3,"total":12,"total_pages":4,"data":[{"id":4,"first_name":"Eve",>"last_name":"Holt","avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg"},{"id":5,>"first_name":"Charles","last_name":"Morris","avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg"},{"id":6,>"first_name":"Tracey","last_name":"Ramos","avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg"}]}
+```
+```output
+eddie@Azure:~$ curl 40.117.238.238
+{
+  "userId": 1,
+  "id": 1,
+  "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+  "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+}
+```
 Great! We have got expected output through the Ambassador proxy.

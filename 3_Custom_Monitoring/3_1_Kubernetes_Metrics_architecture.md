@@ -30,7 +30,7 @@ Validate your metrics server is accessable by running `kubectl get --raw "/apis/
 
 Get this repository and cd to this folder (on your GOPATH):
 
-```
+```console
 go get -u github.com/Azure/azure-k8s-metrics-adapter
 cd $GOPATH/src/github.com/Azure/azure-k8s-metrics-adapter/samples/servicebus-queue/
 ```
@@ -38,7 +38,7 @@ cd $GOPATH/src/github.com/Azure/azure-k8s-metrics-adapter/samples/servicebus-que
 ## Setup Service Bus
 Create a service bus in azure:
 
-``` 
+```console 
 export SERVICEBUS_NS=sb-external-ns-<your-initials>
 az group create -n sb-external-example -l eastus
 az servicebus namespace create -n $SERVICEBUS_NS -g sb-external-example
@@ -47,14 +47,14 @@ az servicebus queue create -n externalq --namespace-name $SERVICEBUS_NS -g sb-ex
 
 Create an auth rules for queue:
 
-```
+```console
 az servicebus queue authorization-rule create --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --queue-name externalq  --name demorule --rights Listen Manage Send
 
 #save for connection string for later
 export SERVICEBUS_CONNECTION_STRING="$(az servicebus queue authorization-rule keys list --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --name demorule  --queue-name externalq -o json | jq -r .primaryConnectionString)"
 ```
 
-> Note: this gives full access to the queue for ease of use of demo.  You should create more fine grained control for each component of your app.  For example the consumer app should only have `Listen` rights and the producer app should only have `Send` rights.
+> **Note:** this gives full access to the queue for ease of use of demo.  You should create more fine grained control for each component of your app.  For example the consumer app should only have `Listen` rights and the producer app should only have `Send` rights.
 
 ## Setup AKS Cluster
 
@@ -72,36 +72,37 @@ wget -O producer https://ejvlab110533.blob.core.windows.net/ejvlab/producer
 
 Run the producer to create a few queue items, then hit `ctl-c` after a few message have been sent to stop it:
 
-```
+```console
 .producer 500
 ```
 
 Check the queue has values:
 
-```
+```console
 az servicebus queue show --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --name externalq -o json | jq .messageCount
 ```
 
 ### Configure Secret for consumer pod
 Create a secret with the connection string (from [previous step](#setup-service-bus)) for the service bus:
 
-```
+```console
 kubectl create secret generic servicebuskey --from-literal=sb-connection-string=$SERVICEBUS_CONNECTION_STRING
 ```
 
 ### Deploy Consumer 
 Deploy the consumer:
 
-```
+```console
 kubectl apply -f deploy/consumer-deployment.yaml
 ```
 
 Check that the consumer was able to receive messages:
 
-```
+```console
 kubectl logs -l app=consumer
+```
 
-# output should look something like
+```output
 connecting to queue:  externalq
 setting up listener
 listening...
@@ -124,12 +125,12 @@ received message:  the answer is 42
 
 Deploy the adapter:
 
-```
+```console
 helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics 
 ```
 
 
->Note: if you used a Service Principal you will need the deployment with a service principal configured and a secret deployed with the service principal values 
+>**Note:** if you used a Service Principal you will need the deployment with a service principal configured and a secret deployed with the service principal values 
 >
 >```
 >helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics --set azureAuthentication.method=clientSecret --set azureAuthentication.tenantID=<your tenantid> --set azureAuthentication.clientID=<your clientID> --set azureAuthentication.clientSecret=<your clientSecret> --set azureAuthentication.createSecret=true`
@@ -138,10 +139,10 @@ helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --name
 
 Check you can hit the external metric endpoint.  The resources will be empty as it [is not implemented yet](https://github.com/Azure/azure-k8s-metrics-adapter/issues/3) but you should receive a result.
 
-```
+```console
 kubectl get --raw "/apis/external.metrics.k8s.io/v1beta1" | jq .
-
-# output should look something like
+```
+```output
 {
   "kind": "APIResourceList",
   "apiVersion": "v1",
@@ -153,37 +154,37 @@ kubectl get --raw "/apis/external.metrics.k8s.io/v1beta1" | jq .
 ### Configure Metric Adapter with metrics
 The metric adapter deploys a CRD called ExternalMetric which you can use to configure metrics.  To deploy these metric we need to update the Service Bus namespace in the configuration then deploy it:
 
-```
+```console
 sed -i 's|sb-external-ns|'${SERVICEBUS_NS}'|g' deploy/externalmetric.yaml
 kubectl apply -f deploy/externalmetric.yaml
 ```
 
-> note: the ExternalMetric configuration is deployed per namespace.
+> **Note:** the ExternalMetric configuration is deployed per namespace.
 
 You can list of the configured external metrics via:
 
-```
+```console
 kubectl get aem #shortcut for externalmetric
 ```
 
 ### Deploy the HPA
 Deploy the HPA:
 
-```
+```console
 kubectl apply -f deploy/hpa.yaml
 ```
 
-> note: the `external.metricName` defined on the HPA must match the `metadata.name` on the ExternalMetric declaration, in this case `queuemessages`
+> **Note:** the `external.metricName` defined on the HPA must match the `metadata.name` on the ExternalMetric declaration, in this case `queuemessages`
 
 After a few seconds, validate that the HPA is configured.  If the `targets` shows `<unknown>` wait longer and try again.
 
-```
+```console
 kubectl get hpa consumer-scaler
 ```
 
 You can also check the queue value returns manually by running:
 
-```
+```console
 kubectl  get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/default/queuemessages" | jq .
 ```
 
@@ -191,13 +192,13 @@ kubectl  get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/default/que
 
 Put some load on the queue. Note this will add 20,000 message then exit.
 
-```
+```console
 producer 0
 ```
 
 Now check your queue is loaded:
 
-```
+```console
 az servicebus queue show --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --name externalq -o json | jq .messageCount
 
 // should have a good 19,000 or more
@@ -206,10 +207,10 @@ az servicebus queue show --resource-group sb-external-example --namespace-name $
 
 Now watch your HPA pick up the queue count and scal the replicas.  This will take 2 or 3 minutes due to the fact that the HPA check happens every 30 seconds and must have a value over target value.  It also takes a few seconds for the metrics to be reported to the Azure endpoint that is queried.  It will then scale back down after a few minutes as well.
 
-```
+```console
 kubectl get hpa consumer-scaler -w
 
-#output similiar to
+```output
 NAME              REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS   AGE  
 consumer-scaler   Deployment/consumer   0/30      1         10        1          1h   
 consumer-scaler   Deployment/consumer   27278/30   1         10        1         1h   
@@ -227,7 +228,7 @@ consumer-scaler   Deployment/consumer   20059/30   1         10        10       
 
 Once it is scaled up you can check the deployment:
 
-```
+```console
 kubectl get deployment consumer
 
 NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
@@ -236,7 +237,7 @@ consumer   10         10         10            10           23m
 
 And check out the logs for the consumers:
 
-```
+```console
 k logs -l app=consumer --tail 100
 ```
 
@@ -245,7 +246,7 @@ Once the queue is empty (will happen pretty quickly after scaled up to 10) you s
 
 Once you are done with this experiment you can delete kubernetes deployments and  the resource group:
 
-```
+```console
 kubectl delete -f deploy/hpa.yaml
 kubectl delete -f deploy/consumer-deployment.yaml
 helm delete --purge sample-release

@@ -63,14 +63,19 @@ You can also find the install.yaml in the latest agones-install zip from the rel
 ### Confirming Agones started successfully
 To confirm Agones is up and running, run the following command:
 
+```console
 kubectl describe --namespace agones-system pods
-It should describe the single pod created in the agones-system namespace, with no error messages or status. The Conditions section should look like this:
+```
 
+It should describe the single pod created in the agones-system namespace, with no error messages or status. The Conditions section should look like this:
+```output
+...
 Conditions:
   Type           Status
   Initialized    True
   Ready          True
   PodScheduled   True
+```
 
 That’s it! This creates the Custom Resource Definitions that power Agones and allows us to define resources of type GameServer.
 
@@ -102,7 +107,7 @@ NAME         AGE
 simple-udp   5m
 ```
 
-You can also see the Pod that got created by running kubectl get pods, the Pod will be prefixed by simple-udp.
+You can also see the Pod that got created by running `kubectl get pods`, the Pod will be prefixed by simple-udp.
 
 ```console
 NAME                                     READY     STATUS    RESTARTS   AGE
@@ -123,36 +128,7 @@ Labels:       stable.agones.dev/gameserverset=simple-udp-jq8kd
 Annotations:  <none>
 API Version:  stable.agones.dev/v1alpha1
 Kind:         GameServer
-Metadata:
-  Cluster Name:
-  Creation Timestamp:  2018-06-30T14:15:43Z
-  Finalizers:
-    stable.agones.dev
-  Generate Name:  simple-udp-jq8kd-
-  Generation:     1
-  Resource Version:        11978
-  Self Link:               /apis/stable.agones.dev/v1alpha1/namespaces/default/gameservers/simple-udp-jq8kd-q8dzg
-  UID:                     132bb210-7c70-11e8-b9be-08002703ef08
-Spec:
-  Container:  simple-udp
-  Health:
-    Failure Threshold:      3
-    Initial Delay Seconds:  5
-    Period Seconds:         5
-  Ports:
-    Container Port:  7654
-    Host Port:       7614
-    Name:            default
-    Port Policy:     dynamic
-    Protocol:        UDP
-  Template:
-    Metadata:
-      Creation Timestamp:  <nil>
-    Spec:
-      Containers:
-        Image:  gcr.io/agones-images/udp-server:0.6
-        Name:   simple-udp
-        Resources:
+...
 Status:
   Address:    192.168.99.100
   Node Name:  agones

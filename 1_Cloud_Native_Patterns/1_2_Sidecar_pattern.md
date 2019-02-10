@@ -15,7 +15,7 @@ cd docker-nginx-ssl-proxy
 
 Adding TLS files to Kubernetes secrets
 
-```
+```console
 cd /path/to/certs/folder
 kubectl create secret generic ssl-key-secret --from-file=proxykey=proxykey --from-file=proxycert=proxycert --from-file=dhparam=dhparam
 ```
@@ -71,7 +71,7 @@ spec:
 
 Save this file to sidecar-ex.yaml and create deployment Kubernetes object:
 
-```
+```console
 kubectl create -f sidecar-ex.yaml
 ```
 
@@ -85,9 +85,12 @@ sidecar-686bbff8d7-42mcn   2/2       Running   0          1m
 ## Testing
 For testing, setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
 
-```
+```console
 kubectl port-forward <pod> 8043:443
-#and in new terminal window run
+```
+
+In a new terminal window run:
+```console
 kubectl port-forward <pod> 8030:3000
 ```
 

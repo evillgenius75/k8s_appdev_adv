@@ -11,7 +11,7 @@ If cloud shell timeouts get your ire up, feel free to install these tools and ru
 * Helm
 * Kubernetes CLI (kubectl)
 * git tools
-> [!NOTE]
+> **NOTE:**
 > Windows users beware! You might want to use cloud shell as some of the tools are difficult to get running on Win10.
 
 ## AKS Deployment
@@ -29,7 +29,7 @@ Validate that you can call the AKS api and that the AKS nodes are ready by using
 kubectl get nodes
 ```
 With your eyeballs, check the ready status of each node in the response which should look something like this.
-```console
+```output
 NAME                                STATUS   ROLES   AGE   VERSION
 aks-nodepool1-38423990-vmss000000   Ready    agent   29d   v1.11.5
 aks-nodepool1-38423990-vmss000001   Ready    agent   29d   v1.11.5
