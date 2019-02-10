@@ -147,4 +147,4 @@ Events:
   Normal  EnsuredLoadBalancer   63m   service-controller  Ensured load balancer
 ```
 
-Now you policy is applied automatically.
+Now your policy is applied automatically.
