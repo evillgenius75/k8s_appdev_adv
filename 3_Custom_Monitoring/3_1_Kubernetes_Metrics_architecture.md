@@ -209,6 +209,7 @@ Now watch your HPA pick up the queue count and scal the replicas.  This will tak
 
 ```console
 kubectl get hpa consumer-scaler -w
+```
 
 ```output
 NAME              REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS   AGE  
