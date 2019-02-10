@@ -67,7 +67,7 @@ Events:
   Normal   Created    13m                kubelet, aks-agentpool-22325591-2  Created container
   Normal   Started    13m                kubelet, aks-agentpool-22325591-2  Started container
   Warning  Unhealthy  12m (x4 over 13m)  kubelet, aks-agentpool-22325591-2  Readiness probe failed: Get http://172.22.0.37:8000/: dial tcp 172.22.0.37:8000: connect: connection refused
-  ```
+```
 
 ### Liveness Probes
 Another useful way to customize when Kubernetes restarts your applications is through liveness probes. Kubernetes will execute a container's liveness probe periodically to check that the container is running correctly. If the probe reports failure, the container is restarted. Otherwise, Kubernetes leaves the container as-is.
