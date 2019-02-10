@@ -279,6 +279,7 @@ Verify that the disruption budget reflects the new state of the deployment
 ```console
 kubectl get pdb nginx-pdb -o yaml 
 ```
+
 ```yaml
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
@@ -295,17 +296,17 @@ status:
   disruptionsAllowed: 1
   expectedPods: 6
   observedGeneration: 1
-  ```
+```
 
-  Now drain the node you selected as the one with the most replicas
+Now drain the node you selected as the one with the most replicas
 >**Note:** You may want to open another browser window with http://shell.azure.com and run the following commands in two seperate shells. Run the watch command first and then drain the node you selected
 
-  ```console
-  kubectl drain node aks-nodepool1-76410264-0
-  ```
+```console
+kubectl drain node aks-nodepool1-76410264-0
+```
 
   Use the watch command to see the updates happen in real time and you will notice that only a sinle container is evicted at a time to preserve the PDB created.
 
-  ```console
-  watch -d -n 1 kubectl get pods -o wide
-  ```
+```console
+watch -d -n 1 kubectl get pods -o wide
+```
