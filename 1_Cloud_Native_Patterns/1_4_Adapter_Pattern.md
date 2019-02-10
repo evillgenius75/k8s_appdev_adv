@@ -1,4 +1,4 @@
-# Exercise 1.3 - Deploy an Adapter Container
+# Exercise 1.4 - Deploy an Adapter Container
 
 ## Main application
 It defines a main application container which writes the current date and system usage information to a log file every five seconds. 
@@ -7,7 +7,7 @@ The adapter container reads what the application has written andreformats it int
 
 ## Deployment
 ### Kubernetes adapter deployment
-This application writes system usage information (`top`) to a status file every five seconds. This sidecar container takes the output format of the application(the current date and system usage information), simplifies and reformats it for the monitoring service to come and collect. In this example, our monitoring service requires status files to have the date, then memory usage, then CPU percentage each on a new line. Our adapter container will inspect the contents of the app's top file, reformat it, and write the correctly formatted output to the status file.
+This application writes system usage information `top` to a status file every five seconds. This sidecar container takes the output format of the application(the current date and system usage information), simplifies and reformats it for the monitoring service to come and collect. In this example, our monitoring service requires status files to have the date, then memory usage, then CPU percentage each on a new line. Our adapter container will inspect the contents of the app's top file, reformat it, and write the correctly formatted output to the status file.
 
 
 ```yaml
@@ -92,12 +92,12 @@ kubectl exec <your-pod-name> -c app-container -it sh
 
 Take a look at what the application is writing:
 
-```console   
+```console
 cat /var/log/top.txt
 ```   
 Take a look at what the adapter has reformatted it to:
 
-```console   
+```console
 cat /var/log/status.txt
 ```
 
