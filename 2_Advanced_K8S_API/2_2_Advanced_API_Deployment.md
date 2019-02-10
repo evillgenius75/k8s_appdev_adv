@@ -17,7 +17,7 @@ Canary Deployment and Blue/Green Deployment capabilities.
 
 First create a very basic deployment that will deploy an nginx containers with nginx version 1.7
 
-```yaml 
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -68,7 +68,7 @@ With the Recreate strategy, all running pods in the deployment are killed, and n
 
 Let's edit the deployment so that the update strategy is recreate.
 
-```console 
+```console
 kubectl edit deploy nginx-deploy
 ```
 This will open a VI editor in console. Replace the lines:
@@ -128,7 +128,7 @@ When updating your deployment with RollingUpdate, there are two useful fields yo
 
 Let's edit the deployment so that the update strategy is recreate.
 
-```console 
+```console
 kubectl edit deploy nginx-deploy
 ```
 This will open a VI editor in console. Replace the lines:
