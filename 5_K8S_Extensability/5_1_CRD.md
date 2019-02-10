@@ -31,7 +31,7 @@ az network nsg rule create \
   --priority 520 \
   --source-port-range "*" \
   --destination-port-range 7000-8000
-  ```
+```
 
 ### Creating and assigning Public IPs to Nodes
 Nodes in AKS don’t get a Public IP by default. To assign a Public IP to a Node, find the Resource Group where the AKS resources are installed on the portal (it should have a name like MC_resourceGroupName_AKSName_westeurope). Run the following yaml to create a DaemonSet that will automatically assign a PublicIP to each node of your cluster.
