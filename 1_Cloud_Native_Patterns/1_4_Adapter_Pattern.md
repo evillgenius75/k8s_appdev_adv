@@ -89,16 +89,42 @@ Once the pod is running connect to the application pod:
 ```console
 kubectl exec <your-pod-name> -c app-container -it sh
 ``` 
+```output
+Defaulting container name to app-container.
+Use 'kubectl describe pod/adapter-5c5d4b7dd4-f2kfj -n default' to see all of the containers in this pod.
+/ # 
+```
 
 Take a look at what the application is writing:
 
 ```console
-cat /var/log/top.txt
-```   
+/ #cat /var/log/top.txt
+```
+
+```output
+Sun Feb 10 22:56:11 UTC 2019
+Mem: 3281684K used, 3855428K free, 1692K shrd, 140324K buff, 2201272K cached
+CPU:   0% usr   0% sys   0% nic 100% idle   0% io   0% irq   0% sirq
+Load average: 0.69 0.37 0.23 1/699 33
+  PID  PPID USER     STAT   VSZ %VSZ CPU %CPU COMMAND
+   27     0 root     S     1596   0%   0   0% sh
+    1     0 root     S     1588   0%   1   0% /bin/sh -c while true; do date > /var/log/top.txt && top -n 1 -b >> /var/log/top.txt; sleep 5;done
+   33     1 root     R     1528   0%   1   0% top -n 1 -b
+```
+
 Take a look at what the adapter has reformatted it to:
 
 ```console
-cat /var/log/status.txt
+/ #cat /var/log/status.txt
 ```
+
+```output
+Sun Feb 10 22:56:16 UTC 2019
+3281452K
+0%
+/ #
+```
+
+Type `exit` and return to exit the pod's shell
 
 Now the logging system can receive the log in the format it expects the data to be in and the original application did not have to be modified in any way.
