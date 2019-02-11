@@ -59,14 +59,18 @@ nginx-deploy-6bbdfbd484-7x8kp       1/1       Running   0          45s
 `ctrl+c to` exit the wait state
 
 ## Update Strategy
-Other than providing seamless replication and declarative system states, using deployments gives you the ability to update your application with zero downtime and track multiple versions of your deployment environment.
+using deployments gives you the following benefits:
+* Seamless replication and declarative system states
+* the ability to update your application with minimal downtime 
+* track multiple versions of your deployment environment.
+
 When a deployment's configuration changes—for example by updating the image used by its pods—Kubernetes detects this change and executes steps to reconcile the system state with the configuration change. The mechanism by which Kubernetes executes these updates is determined by the deployment's `strategy.type` field.
 
 ### Recreate
 
 With the Recreate strategy, all running pods in the deployment are killed, and new pods are created in their place. This does not guarantee zero- downtime, but can be useful in case you are not able to have multiple versions of your application running simultaneously.
 
-### Lab 2.7 - Update a deployment with Recreate Strategy and updte container.
+### Lab 2.7 - Update a deployment with Recreate Strategy and update container.
 
 Let's edit the deployment so that the update strategy is recreate.
 
@@ -118,7 +122,7 @@ kubectl get pods -w
 
 What you should see is all of the original pods be terminated and then deleted, and rather quickly 6 new pods pods being created with the new version of nginx.
 
-### RollingUpdate
+#### RollingUpdate
 
 The preferred and more commonly used strategy is `RollingUpdate`. This gracefully updates pods one at a time to prevent your application from going down. The strategy gradually brings pods with the new configuration online, while killing old pods as the new configuration scales up.
 
@@ -167,7 +171,7 @@ kubectl get pods -w
 
 You will see that 4 new pods will be created and 2 old pods will be in tern=minating state and you can watch the rollout of the deployment happen.
 
-##Rollbacks
+#### Rollbacks
 The rollback process in v1 of the Deployment API is now a manual process through the `kubectl rollout` command set. 
 
 ### Lab 2.9 Roll back to nginx version 1.7
@@ -188,14 +192,18 @@ REVISION  CHANGE-CAUSE
 Now review the revision 1 to verify it will revert the image back to 1.7 of nginx
 
 ```console
-kubectl rollout history deploy nginx-deploy --revision=1 --record=true
+kubectl rollout history deploy nginx-deploy --revision=1 
 ```
+Now rollback to revision 1.
 
 ```console
-kubectl describe deploy nginx-deploy
+kubectl rollout undo deploy nginx-deploy --to-revision=1
 ```
 
-```output
+Now the pod is running nginx version 1.7 again. Verify this by executing describe on the deployment.
+
+```command
+kubectl describe deploy nginx-deploy
 Name:                   nginx-deploy
 Namespace:              default
 CreationTimestamp:      Sun, 10 Feb 2019 21:10:23 +0000
@@ -207,8 +215,6 @@ Containers:
     Port:         80/TCP
 ...
 ```
-
-Now the pod is running nginx version 1.7 again.
 
 ## Pod Disruption Budgets
 
