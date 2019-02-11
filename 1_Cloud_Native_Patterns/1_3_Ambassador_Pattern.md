@@ -1,4 +1,4 @@
-# Exercise 1.2 - Deploy an Ambassador Container
+# Exercise 1.3 - Deploy an Ambassador Container
 
 We need to connect to an external resource, however we want to be able to
 dynamically switch our external connection without changing the application

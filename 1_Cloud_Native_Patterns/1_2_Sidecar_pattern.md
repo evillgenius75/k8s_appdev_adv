@@ -1,4 +1,4 @@
-# Exercise 1.1 - Deploy a Sidecar Container to enable HTTPS
+# Exercise 1.2 - Deploy a Sidecar Container to enable HTTPS
 
 ## Main application
 For our example main application use a Nodejs Hello World service (evillgenius75/web-service)

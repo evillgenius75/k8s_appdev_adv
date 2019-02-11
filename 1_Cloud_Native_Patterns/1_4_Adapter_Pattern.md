@@ -3,11 +3,11 @@
 ## Main application
 It defines a main application container which writes the current date and system usage information to a log file every five seconds. 
 ## Adapter container 
-The adapter container reads what the application has written andreformats it into a structure that a hypothetical monitoring service requires.
+The adapter container reads what the application has written and reformats it into a structure that a hypothetical monitoring service requires.
 
 ## Deployment
 ### Kubernetes adapter deployment
-This application writes system usage information `top` to a status file every five seconds. This sidecar container takes the output format of the application(the current date and system usage information), simplifies and reformats it for the monitoring service to come and collect. In this example, our monitoring service requires status files to have the date, then memory usage, then CPU percentage each on a new line. Our adapter container will inspect the contents of the app's top file, reformat it, and write the correctly formatted output to the status file.
+This application writes system usage information (`top`) to a status file every five seconds. This sidecar container takes the output format of the application(the current date and system usage information), simplifies and reformats it for the monitoring service to come and collect. In this example, our monitoring service requires status files to have the date, then memory usage, then CPU percentage each on a new line. Our adapter container will inspect the contents of the app's top file, reformat it, and write the correctly formatted output to the status file.
 
 
 ```yaml
@@ -69,7 +69,7 @@ spec:
 
 Save this file to adapter-ex.yaml and create deployment Kubernetes object:
 
-```console
+```
 kubectl create -f adapter-ex.yaml
 ```
 
@@ -84,47 +84,19 @@ adapter-5469c8c6f9-cdcpp      2/2     Running   0          5s
 >**NOTE:** The Pod name in the output above is an example. Please use your exact pod name in the steps below
 
 ## Testing
-Once the pod is running connect to the application pod:
-
+Once the pod is running:
+   
+### Connect to the application pod
 ```console
 kubectl exec <your-pod-name> -c app-container -it sh
 ``` 
-```output
-Defaulting container name to app-container.
-Use 'kubectl describe pod/adapter-5c5d4b7dd4-f2kfj -n default' to see all of the containers in this pod.
-/ # 
+### Take a look at what the application is writing
+```   
+cat /var/log/top.txt
+```   
+### Take a look at what the adapter has reformatted it to
+```   
+cat /var/log/status.txt
 ```
-
-Take a look at what the application is writing:
-
-```console
-/ #cat /var/log/top.txt
-```
-
-```output
-Sun Feb 10 22:56:11 UTC 2019
-Mem: 3281684K used, 3855428K free, 1692K shrd, 140324K buff, 2201272K cached
-CPU:   0% usr   0% sys   0% nic 100% idle   0% io   0% irq   0% sirq
-Load average: 0.69 0.37 0.23 1/699 33
-  PID  PPID USER     STAT   VSZ %VSZ CPU %CPU COMMAND
-   27     0 root     S     1596   0%   0   0% sh
-    1     0 root     S     1588   0%   1   0% /bin/sh -c while true; do date > /var/log/top.txt && top -n 1 -b >> /var/log/top.txt; sleep 5;done
-   33     1 root     R     1528   0%   1   0% top -n 1 -b
-```
-
-Take a look at what the adapter has reformatted it to:
-
-```console
-/ #cat /var/log/status.txt
-```
-
-```output
-Sun Feb 10 22:56:16 UTC 2019
-3281452K
-0%
-/ #
-```
-
-Type `exit` and return to exit the pod's shell
 
 Now the logging system can receive the log in the format it expects the data to be in and the original application did not have to be modified in any way.
