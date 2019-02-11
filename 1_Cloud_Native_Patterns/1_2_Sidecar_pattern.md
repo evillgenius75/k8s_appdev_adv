@@ -67,7 +67,9 @@ kubectl create -f sidecar-ex.yaml
 Wait for pods to be Ready:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                            READY     STATUS    RESTARTS   AGE
 sidecar-ex-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
