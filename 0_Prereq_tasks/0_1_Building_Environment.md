@@ -1,7 +1,7 @@
 # Build the Infrastructure needed for todays Exercises
 
 ## Required Tools
-This entire lab can be completed in cloud shell. If you don't know what cloudshell, or how to set it up, you are probably in the wrong lab.
+This entire lab can be completed in bash flavored cloud shell. If you don't know what cloudshell, or how to set it up, you are probably in the wrong lab.
 
 If cloud shell timeouts get your ire up, feel free to install these tools and run the lab locally:  
 * Bash
@@ -12,7 +12,7 @@ If cloud shell timeouts get your ire up, feel free to install these tools and ru
 * Kubernetes CLI (kubectl)
 * git tools
 > **NOTE:**
-> Windows users beware! You might want to use cloud shell as some of the tools are difficult to get running on Win10.
+> Windows users beware! You might want to use ~~powershell~~ bash flavored cloud shell as some of the tools are difficult to get running on Win10.
 
 ## AKS Deployment
 For this lab, we will install a vanilla 3 node AKS cluster that is RBAC enabled.
