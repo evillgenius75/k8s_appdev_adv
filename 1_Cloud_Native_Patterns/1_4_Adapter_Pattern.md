@@ -76,7 +76,9 @@ kubectl create -f adapter-ex.yaml
 Wait for pods to be running:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                            READY     STATUS    RESTARTS   AGE
 adapter-5469c8c6f9-cdcpp      2/2     Running   0          5s
 ```

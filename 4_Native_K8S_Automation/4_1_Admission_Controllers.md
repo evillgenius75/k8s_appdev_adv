@@ -114,6 +114,8 @@ Notice that the Service type is LoadBalancer which will normally create a Public
 
 ```console
 kubectl get svc -w
+```
+```output
 NAME                                                        TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
 admission-webhook-internallb-webhook-admission-controller   NodePort       172.23.217.199   <none>        443:32513/TCP   1h
 foo-svc                                                     LoadBalancer   172.23.161.50    172.22.0.97   80:32545/TCP    1h
@@ -126,6 +128,8 @@ You can also get the description of the service and see the proper annotation wa
 
 ```console
 kubectl describe svc foo-svc
+```
+```output
 Name:                     foo-svc
 Namespace:                default
 Labels:                   app=foo-svc

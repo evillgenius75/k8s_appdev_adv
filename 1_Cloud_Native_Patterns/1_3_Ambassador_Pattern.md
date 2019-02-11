@@ -74,7 +74,9 @@ kubectl create -f ambassador-ex.yaml
 Wait for pods to be running:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                            READY     STATUS    RESTARTS   AGE
 ambassador-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
@@ -83,7 +85,9 @@ The manifest included a service of type LoadBalancer which exposes the app-conta
 
 ```console
 kubectl get svc
+```
 
+```output
 NAME             TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)        AGE
 ambassador-svc   LoadBalancer   172.23.186.163   40.117.238.238   80:30429/TCP   5m
 kubernetes       ClusterIP      172.23.0.1       <none>           443/TCP        17d

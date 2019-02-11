@@ -200,7 +200,8 @@ Now check your queue is loaded:
 
 ```console
 az servicebus queue show --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --name externalq -o json | jq .messageCount
-
+```
+```output
 // should have a good 19,000 or more
 19,858
 ```
@@ -231,7 +232,9 @@ Once it is scaled up you can check the deployment:
 
 ```console
 kubectl get deployment consumer
+```
 
+```output
 NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 consumer   10         10         10            10           23m
 ```
@@ -245,9 +248,10 @@ k logs -l app=consumer --tail 100
 ## Clean up
 Once the queue is empty (will happen pretty quickly after scaled up to 10) you should see your deployment scale back down.
 
-Once you are done with this experiment you can delete kubernetes deployments and  the resource group:
+Once you are done with this experiment you can delete kubernetes deployments:
 
 ```console
 kubectl delete -f deploy/hpa.yaml
 kubectl delete -f deploy/consumer-deployment.yaml
 helm delete --purge sample-release
+```

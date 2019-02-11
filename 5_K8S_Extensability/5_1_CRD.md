@@ -122,6 +122,8 @@ Let’s wait for the GameServer state to become Ready:
 
 ```console
 watch kubectl describe gameserver
+```
+```output
 Name:         simple-udp-jq8kd-q8dzg
 Namespace:    default
 Labels:       stable.agones.dev/gameserverset=simple-udp-jq8kd
