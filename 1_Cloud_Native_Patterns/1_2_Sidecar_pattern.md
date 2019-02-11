@@ -1,23 +1,20 @@
 # Exercise 1.2 - Deploy a Sidecar Container to enable HTTPS
 
 ## Main application
-For our example main application use a Nodejs Hello World service (evillgenius75/web-service)
+For our example main application use a Nodejs Hello World service (evillgenius75/echo-server)
 ## Sidecar container 
-To add https support I will use Nginx ssl proxy (ployst/nginx-ssl-proxy) container
+To add https support I will use Nginx ssl proxy (evillgenius/tls-sidecar) container
 ## Deployment
 ### TLS/SSL keys
-First we need to generate TLS certificate keys and add them to Kubernetes secrets. For that use a script from nginx ssl proxy repository which combines all steps in one:
+First we need to generate TLS certificate keys and add them to Kubernetes secrets:
 ```console
-git clone https://github.com/ployst/docker-nginx-ssl-proxy.git
-cd docker-nginx-ssl-proxy
-./setup-certs.sh /path/to/certs/folder
+openssl req -x509 -newkey rsa:2048 -keyout tls.key -out tls.crt -nodes -subj '/CN=echo-server'
 ```
 
 Adding TLS files to Kubernetes secrets
 
 ```console
-cd /path/to/certs/folder
-kubectl create secret generic ssl-key-secret --from-file=proxykey=proxykey --from-file=proxycert=proxycert --from-file=dhparam=dhparam
+kubectl create secret tls echo-tls --cert=tls.crt --key=tls.key
 ```
 
 ### Kubernetes sidecar deployment
@@ -27,45 +24,37 @@ The following configuration defines the main application containers, “nodejs-h
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: sidecar
+  name: sidecar-ex
   labels:
-    app: nodejs
+    app: sidecar-ex
     proxy: nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nodejs-hello
+      app: sidecar-ex
   template:
     metadata:
       labels:
-        app: nodejs-hello
+        app: sidecar-ex
     spec:
       containers:
-      - name: nodejs-hello
-        image: evillgenius/nodehello:v1
+      - name: echo
+        image: evillgenius/echo-server:vb1
         ports:
-        - containerPort: 3000
+        - containerPort: 8080
       - name: nginx
-        image: ployst/nginx-ssl-proxy
-        env:
-        - name: SERVER_NAME
-          value: "www.evillgenius.com"
-        - name: ENABLE_SSL
-          value: "true"
-        - name: TARGET_SERVICE
-          value: "localhost:3000"
+        image: evillgenius/tls-sidecar:vb1
         volumeMounts:
           - name: ssl-keys
             readOnly: true
-            mountPath: "/etc/secrets"          
+            mountPath: "/etc/nginx/ssl"          
         ports:
-        - containerPort: 80
-          containerPort: 443
+        - containerPort: 443
       volumes:
       - name: ssl-keys
         secret:
-          secretName: ssl-key-secret
+          secretName: echo-tls
 ```
 
 
@@ -80,7 +69,7 @@ Wait for pods to be Ready:
 kubectl get pods
 
 NAME                            READY     STATUS    RESTARTS   AGE
-sidecar-686bbff8d7-42mcn   2/2       Running   0          1m
+sidecar-ex-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
 ## Testing
 For testing, setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
@@ -88,6 +77,9 @@ For testing, setup two port forwarding rules. First is for application port and 
 ```console
 kubectl port-forward <pod> 8043:443 &
 ```
+
+
+Now lets validate that application responds on https and doesn’t respond on http requests
 
 In a new terminal window run:
 ```console
@@ -99,31 +91,32 @@ First lets validate that application responds on http and doesn’t respond on h
 
 ### Using http
 ```console
-curl -k -H "Host: appname.example.com" http://127.0.0.1:8030/ 
-Hello World! 
-I am undefined!
+curl -k http://127.0.0.1:8043/lorem 
+<html>
+<head><title>400 The plain HTTP request was sent to HTTPS port</title></head>
+<body bgcolor="white">
+<center><h1>400 Bad Request</h1></center>
+<center>The plain HTTP request was sent to HTTPS port</center>
+<hr><center>nginx/1.11.13</center>
+</body>
+</html>
 ```
 ### Using https
 ```console
-curl -k -H "Host: appname.example.com" https://127.0.0.1:8030/ 
-curl: (35) LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 127.0.0.1:8030
+curl -k https://127.0.0.1:8043/lorme 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a scelerisque nisl. Sed placerat finibus ante, non iaculis dui. Etiam viverra, ex sit amet scelerisque lacinia, est nulla egestas lectus, sit amet ullamcorper nisi nisl vitae orci. Fusce et dui facilisis, luctus mauris sed, consequat arcu. Duis porttitor libero id neque dapibus, eget aliquet turpis accumsan. Praesent lectus mauris, tempor eu gravida at, hendrerit nec massa. Vestibulum sed luctus est. Nunc rutrum risus at nisl dictum volutpat. Pellentesque auctor massa tortor, consequat tincidunt tortor bibendum a. Nullam mattis eros eu risus volutpat, id euismod elit facilisis. Vestibulum quis eros a magna accumsan scelerisque vel vel metus. Curabitur at magna cursus, vulputate velit eu, sodales dolor. Duis cursus, tortor in vehicula tempor, quam nisi dictum arcu, eu congue mauris felis quis quam. Vivamus vitae risus venenatis, tincidunt eros ac, posuere purus.
+
+Nunc placerat feugiat hendrerit. Proin ipsum ex, tincidunt sed ante et, pretium ullamcorper mauris. Pellentesque vel dolor sed dolor euismod vestibulum. Cras facilisis non lacus nec tincidunt. Duis pharetra lacinia risus, nec sollicitudin odio. Sed et iaculis sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed ultricies rhoncus nunc, a consequat neque pulvinar id. Phasellus in tincidunt tellus, in blandit sem. Integer interdum vehicula lacus at tincidunt. Donec feugiat ultricies risus, et pellentesque orci porta mattis. Morbi ut nisl ut metus ornare egestas. Donec eget orci vitae justo hendrerit faucibus. Morbi et feugiat velit. Integer at iaculis tellus. Aenean dolor lacus, blandit a tempus eu, malesuada ac massa.
+
+Sed suscipit ac mi vitae tincidunt. Vestibulum auctor ...
 ```
 
->**Note:** The SSL handshake issue is expected as our “legacy” application doesn’t support https and even if SSL was configured, another port would have to be configured to serve https. The test's goal was to demonstrate the response.
-
-Time to test connection through sidecar nginx ssl proxy
-
-```console
-curl -k  -H "Host: appname.example.com" https://127.0.0.1:8043/
-Hello World!
-I am undefined!
-```
-
-### Cleanup
 Find and kill the portforward kubectl processes.
 ```console
 ps | grep kubectl
 kill <pids of kubectl processes>
 ```
+
 Great! We have got expected output through https connection.
+
 
