@@ -49,7 +49,9 @@ kubectl apply -f base-deploy.yaml --record=true
 Wait for pods to be Ready:
 ```console
 kubectl get pods -w 
+```
 
+```output
 NAME                                READY     STATUS    RESTARTS   AGE
 nginx-deploy-6bbdfbd484-7x8kp       1/1       Running   0          45s
 ```
@@ -94,7 +96,9 @@ Now scale the deployment to 6 replicas
 
 ```console
 kubectl scale deploy nginx-deploy --replicas=6 --record=true
+```
 
+```output
 kubectl get pods
 NAME                                READY     STATUS    RESTARTS   AGE
 nginx-deploy-6bbdfbd484-8dl98       1/1       Running   0          6s
@@ -172,7 +176,9 @@ Lets inspect the rollout history and rollback the deployment to use version 1.7 
 
 ```console
 kubectl rollout history deploy nginx-deploy
+```
 
+```output
 deployments "nginx-deploy"
 REVISION  CHANGE-CAUSE
 1         kubectl scale deploy nginx-deploy --replicas=6 --record=true
@@ -183,8 +189,13 @@ Now review the revision 1 to verify it will revert the image back to 1.7 of ngin
 
 ```console
 kubectl rollout history deploy nginx-deploy --revision=1 --record=true
+```
 
+```console
 kubectl describe deploy nginx-deploy
+```
+
+```output
 Name:                   nginx-deploy
 Namespace:              default
 CreationTimestamp:      Sun, 10 Feb 2019 21:10:23 +0000
@@ -244,6 +255,9 @@ First determine which node has the most nginx pods
 
 ```console
 kubectl get pods -o wide
+```
+
+```output
 NAME                            READY     STATUS    RESTARTS   AGE       IP            NODE
 nginx-deploy-6bbdfbd484-7d4v8   1/1       Running   0          3m        10.244.1.19   aks-nodepool1-76410264-2
 nginx-deploy-6bbdfbd484-8chs4   1/1       Running   0          3m        10.244.2.20   aks-nodepool1-76410264-0
@@ -280,7 +294,7 @@ Verify that the disruption budget reflects the new state of the deployment
 kubectl get pdb nginx-pdb -o yaml 
 ```
 
-```yaml
+```output
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 ...
