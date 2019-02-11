@@ -47,7 +47,9 @@ kubectl create -f liveready-pod.yaml
 Wait for pods to be Ready:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                            READY     STATUS    RESTARTS   AGE
 liveness-readiness-pod   1/1     Running   0          19s
 ```
@@ -56,7 +58,10 @@ liveness-readiness-pod   1/1     Running   0          19s
 Describe the pod to see the events. Kubernetes thinks the pod is unhealthy. In reality, we just have an application that takes a little while to boot up!
 
 ```console
-kubectl describe pod liveness-readiness-pod 
+kubectl describe pod liveness-readiness-pod
+```
+
+```output
 ....
 Events:
   Type     Reason     Age                From                               Message
@@ -162,7 +167,9 @@ kubectl create -f security-pod.yaml.yaml
 Wait for pods to be Ready:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                            READY     STATUS    RESTARTS   AGE
 security-context-pod    1/1     Running   0          19s
 ```
@@ -235,9 +242,13 @@ EOF
 Create a ConfigMap from the file:
 ```console
 kubectl create configmap redis-config --from-file=redis-config
+```
 
+```console
 kubectl describe configmap redis-config
-##Output
+```
+
+```output
 Name:         redis-config
 Namespace:    default
 Labels:       <none>
@@ -297,7 +308,9 @@ kubectl create -f secret-mysql.yaml
 Wait for pods to be Ready:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                            READY     STATUS    RESTARTS   AGE
 redis                          1/1     Running   0          19s
 ```
@@ -413,7 +426,9 @@ kubectl create -f secret-mysql.yaml
 Wait for pods to be Ready:
 ```console
 kubectl get pods
+```
 
+```output
 NAME                    READY   STATUS    RESTARTS   AGE
 mysql-d4b54994b-7drd6   1/1     Running   0          15m
 ```
@@ -428,7 +443,7 @@ kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h 
 
 This command creates a new Pod in the cluster running a MySQL client and connects it to the server through the Service. If it connects, you know your stateful MySQL database is up and running.
 
-```console
+```output
 If you don't see a command prompt, try pressing enter.
 
 mysql>
