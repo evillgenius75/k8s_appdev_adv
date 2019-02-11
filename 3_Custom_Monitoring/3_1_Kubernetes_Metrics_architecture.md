@@ -4,18 +4,18 @@
 
 Starting from Kubernetes 1.8, resource usage metrics, such as container CPU and memory usage, are available in Kubernetes through the Metrics API. These metrics can be either accessed directly by user, for example by using kubectl top command, or used by a controller in the cluster, e.g. Horizontal Pod Autoscaler, to make decisions.
 
-Through the Metrics API you can get the amount of resource currently used by a given node or a given pod. This API doesn’t store the metric values, so it’s not possible for example to get the amount of resources used by a given node 10 minutes ago.
+Through the Metrics API you can get the amount of resources currently used by a given node or a given pod. This API doesn’t store the metric values, so it’s not possible for example to get the amount of resources used by a given node 10 minutes ago.
 
 The API is no different from any other API:
 
-it is discoverable through the same endpoint as the other Kubernetes APIs under /apis/metrics.k8s.io/ path
-it offers the same security, scalability and reliability guarantees
+It is discoverable through the same endpoint as the other Kubernetes APIs under /apis/metrics.k8s.io/ path
+it offers the same security, scalability and reliability guarantees.
 
 Metrics Server is a cluster-wide aggregator of resource usage data. Starting from Kubernetes 1.8 it’s deployed by default in clusters as a Deployment object. 
 
 Metric server collects metrics from the Summary API, exposed by Kubelet on each node.
 
-Metrics Server registered in the main API server through Kubernetes aggregator.
+The Metrics Server is registered to the main API server through Kubernetes aggregator.
 
 ## Horizontal Pod Autoscaler
 
@@ -25,14 +25,48 @@ The Horizontal Pod Autoscaler is implemented as a Kubernetes API resource and a 
 
 ## Lab 3.1 Implement an autoscale based on CPU metric
 
-Validate your metrics server is accessable by running `kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes" | jq .`
-- [helm](https://docs.helm.sh/using_helm/#quickstart-guide) or install [helm on aks](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm) (Since you have RBAC enabled, you will need to configure permissions as outlined in the second link)
+Validate your metrics server is accessable by running:
+```console
+kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes" | jq .
+```
+Create a service account for tiller and give it Kubernetes RBAC to do the thing tiller needs to do. First create a file called tillerrbac.yaml and populate it with the below yaml:
 
-Get this repository and cd to this folder (on your GOPATH):
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
+```
+Now create the above objects using kubectl:
 
 ```console
-go get -u github.com/Azure/azure-k8s-metrics-adapter
-cd $GOPATH/src/github.com/Azure/azure-k8s-metrics-adapter/samples/servicebus-queue/
+kubectl create -f tillerrbac.yaml
+```
+Last, we need to intitialize helm with our aks cluster:
+
+```console
+helm init --service-account tiller
+```
+
+Clone the external metrics adapter project and move into the servicebus example directory:
+
+```console
+git clone github.com/Azure/azure-k8s-metrics-adapter
+cd azure-k8s-metrics-adapter/samples/servicebus-queue/samples/servicebus-queue/
 ```
 
 ## Setup Service Bus
@@ -67,13 +101,14 @@ Make sure you have cloned this repository and are in the folder `samples/service
 
 download the producer app to produce some messages in the queue
 ```console
-wget -O producer https://ejvlab110533.blob.core.windows.net/ejvlab/producer
+wget -O sb-producer https://ejvlab110533.blob.core.windows.net/ejvlab/producer
 ```
 
 Run the producer to create a few queue items, then hit `ctl-c` after a few message have been sent to stop it:
 
 ```console
-.producer 500
+chmod +x sb-producer
+./sb-producer 500
 ```
 
 Check the queue has values:
