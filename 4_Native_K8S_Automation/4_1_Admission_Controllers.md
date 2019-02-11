@@ -62,7 +62,7 @@ Verify the Pod is running
 kubectl get pods
 ```
 
-now deploy the following deployment and service:
+Next, create the following deployment and service manifest.
 
 ```yaml
 apiVersion: v1
@@ -116,7 +116,13 @@ spec:
                  fieldPath: status.podIP
 ```
 
-Notice that the Service type is LoadBalancer which will normally create a Public Facing Load Balancer. Becasue the Admission Controller was crearted in Mutating mode when the Service is deployed it will be mutatedd to automatically add the correct annotation to make the LoadBalancer an Internal LoadBalancer in Azure.
+Deploy it.
+
+```console
+kubectl apply -f admission.yaml
+```
+
+Notice that the Service type is LoadBalancer which will normally create a Public Facing Load Balancer. Because the Admission Controller was created in *Mutating* mode when the Service is deployed, it will be mutated to automatically add the correct annotation to make the LoadBalancer an Azure Internal LoadBalancer cloud resource.
 
 ```console
 kubectl get svc -w
