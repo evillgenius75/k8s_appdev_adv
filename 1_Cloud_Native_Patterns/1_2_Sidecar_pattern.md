@@ -18,7 +18,7 @@ kubectl create secret tls echo-tls --cert=tls.crt --key=tls.key
 ```
 
 ### Kubernetes sidecar deployment
-The following configuration defines the main application containers, “nodejs-hello” and nginx container “nginx”. Both containers run in the same pod and share pod resources and serve as an example implementation of the sidecar pattern. One thing you want to modify is hostname, you can us a non existing hostname appname.example.com for this example.
+The following configuration defines the main application containers, “nodejs-hello” and nginx container “nginx”. Both containers run in the same pod and share pod resources and serve as an example implementation of the sidecar pattern. 
 
 ```yaml
 apiVersion: apps/v1beta2
@@ -100,7 +100,7 @@ curl -k http://127.0.0.1:8043/lorem
 ```
 ### Using https
 ```console
-curl -k https://127.0.0.1:8043/lorme 
+curl -k https://127.0.0.1:8043/lorem 
 ```
 
 ```output
