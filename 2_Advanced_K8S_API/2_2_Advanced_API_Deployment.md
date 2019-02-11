@@ -118,7 +118,7 @@ kubectl get pods -w
 
 What you should see is all of the original pods be terminated and then deleted, and rather quickly 6 new pods pods being created with the new version of nginx.
 
-### RollingUpdate
+#### RollingUpdate
 
 The preferred and more commonly used strategy is `RollingUpdate`. This gracefully updates pods one at a time to prevent your application from going down. The strategy gradually brings pods with the new configuration online, while killing old pods as the new configuration scales up.
 
@@ -167,7 +167,7 @@ kubectl get pods -w
 
 You will see that 4 new pods will be created and 2 old pods will be in tern=minating state and you can watch the rollout of the deployment happen.
 
-##Rollbacks
+#### Rollbacks
 The rollback process in v1 of the Deployment API is now a manual process through the `kubectl rollout` command set. 
 
 ### Lab 2.9 Roll back to nginx version 1.7
@@ -187,6 +187,11 @@ Now review the revision 1 to verify it will revert the image back to 1.7 of ngin
 
 ```console
 kubectl rollout history deploy nginx-deploy --revision=1 
+```
+Now rollback to revision 1.
+
+```console
+kubectl rollout undo deploy nginx-deploy --to-revision 1
 
 kubectl describe deploy nginx-deploy
 Name:                   nginx-deploy
