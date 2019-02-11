@@ -57,14 +57,18 @@ nginx-deploy-6bbdfbd484-7x8kp       1/1       Running   0          45s
 `ctrl+c to` exit the wait state
 
 ## Update Strategy
-Other than providing seamless replication and declarative system states, using deployments gives you the ability to update your application with zero downtime and track multiple versions of your deployment environment.
+using deployments gives you the following benefits:
+* Seamless replication and declarative system states
+* the ability to update your application with minimal downtime 
+* track multiple versions of your deployment environment.
+
 When a deployment's configuration changes—for example by updating the image used by its pods—Kubernetes detects this change and executes steps to reconcile the system state with the configuration change. The mechanism by which Kubernetes executes these updates is determined by the deployment's `strategy.type` field.
 
 ### Recreate
 
 With the Recreate strategy, all running pods in the deployment are killed, and new pods are created in their place. This does not guarantee zero- downtime, but can be useful in case you are not able to have multiple versions of your application running simultaneously.
 
-### Lab 2.7 - Update a deployment with Recreate Strategy and updte container.
+### Lab 2.7 - Update a deployment with Recreate Strategy and update container.
 
 Let's edit the deployment so that the update strategy is recreate.
 
@@ -182,7 +186,7 @@ REVISION  CHANGE-CAUSE
 Now review the revision 1 to verify it will revert the image back to 1.7 of nginx
 
 ```console
-kubectl rollout history deploy nginx-deploy --revision=1 --record=true
+kubectl rollout history deploy nginx-deploy --revision=1 
 
 kubectl describe deploy nginx-deploy
 Name:                   nginx-deploy
