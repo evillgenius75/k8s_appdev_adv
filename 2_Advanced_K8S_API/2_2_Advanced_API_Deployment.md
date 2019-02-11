@@ -4,14 +4,14 @@
 
 In Kubernetes, Deployment is the recommended way to deploy applications into Kubernetes and is now the main Object with the older `ReplicationControllers` being deprecated. Below are some of the key benefits of the Kubernetes `Deployment`object.
 
-Deploys a ReplicaSet that manages Pod replicas.
-Updates pods (PodTemplateSpec).
-Rollback to older Deployment versions.
-Scale Deployment up or down.
-Pause and resume the Deployment.
-Use the status of the Deployment to determine state of replicas.
-Clean up older ReplicaSets that you don’t need anymore.
-Canary Deployment and Blue/Green Deployment capabilities.
+  *Deploys a ReplicaSet that manages Pod replicas.
+  *Updates pods (PodTemplateSpec).
+  *Rollback to older Deployment versions.
+  *Scale Deployment up or down.
+  *Pause and resume the Deployment.
+  *Use the status of the Deployment to determine state of replicas.
+  *Clean up older ReplicaSets that you don’t need anymore.
+  *Canary Deployment and Blue/Green Deployment capabilities.
 
 ### Lab 2.6 - Create a deployment with replicas.
 
