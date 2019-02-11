@@ -86,12 +86,12 @@ sidecar-686bbff8d7-42mcn   2/2       Running   0          1m
 For testing, setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
 
 ```console
-kubectl port-forward <pod> 8043:443
+kubectl port-forward <pod> 8043:443 &
 ```
 
 In a new terminal window run:
 ```console
-kubectl port-forward <pod> 8030:3000
+kubectl port-forward <pod> 8030:3000 &
 ```
 
 First lets validate that application responds on http and doesn’t respond on https requests
@@ -119,5 +119,11 @@ Hello World!
 I am undefined!
 ```
 
+### Cleanup
+Find and kill the portforward kubectl processes.
+```console
+ps | grep kubectl
+kill <pids of kubectl processes>
+```
 Great! We have got expected output through https connection.
 

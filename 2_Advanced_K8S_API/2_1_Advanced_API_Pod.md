@@ -121,7 +121,7 @@ kubectl apply -f liveready-pod.yaml
 ```
 
 ## Pod Security
-A little-used but powerful feature of Kubernetes pods is that you can declare its security context, an object that configures roles and privileges for containers. A security context can be defined at the pod level or at the container level. If the container doesn't declare its own security context, it will inherit from the parent pod.
+A little-used, but powerful feature of Kubernetes pods are security context, an object that configures roles and privileges for containers. A security context can be defined at the pod level or at the container level. If the container doesn't declare its own security context, it will inherit from the parent pod.
 
 Security contexts generally configure two fields: the user ID that should be used to run the pod or container, and the group ID that should be used for filesystem access. These options are useful when modifying files in a volume that is mounted and shared between containers, or in a persistent volume that's shared between pods. We'll cover volumes in detail in a coming chapter, but for now think of them like a regular directory on your computer's filesystem.
 
@@ -139,7 +139,7 @@ spec:
   securityContext:
     # User ID that containers in this pod should use
     runAsUser: 45
-    # Gropu ID for filesystem access
+    # Group ID for filesystem access
     fsGroup: 231
   volumes:
     - name: simple-directory
@@ -168,7 +168,7 @@ security-context-pod    1/1     Running   0          19s
 ```
 
 #### Testing
-You will need to exec into the pod with an `ls` of the directory and see the properties of the file wher ethe user is UID45 and the FileSystem Group is 213
+You will need to exec into the pod with an `ls` of the directory and see the properties of the file where the user is UID45 and the FileSystem Group is 213
 ```console
 kubectl exec security-context-pod -- ls -l /etc/directory
 ```
@@ -182,7 +182,7 @@ total 4
 
 ### ConfigMaps
 
-Many applications require configuration via some combination of config files, command line arguments, and environment variables. These configuration artifacts should be decoupled from image content in order to keep containerized applications portable. The ConfigMap API resource provides mechanisms to inject containers with configuration data while keeping containers agnostic of Kubernetes. ConfigMap can be used to store fine-grained information like individual properties or coarse-grained information like entire config files or JSON blobs.
+Many applications require configuration via some combination of config files, command line arguments, and environment variables. These configuration artifacts should be decoupled from image content in order to keep containerized applications portable. The ConfigMap API resource provides mechanisms to inject containers with configuration data while keeping containers agnostic of Kubernetes. ConfigMaps can be used to store fine-grained information like individual properties or coarse-grained information like entire config files or JSON blobs.
 
 The ConfigMap API resource holds key-value pairs of configuration data that can be consumed in pods or used to store configuration data for system components such as controllers. ConfigMap is similar to Secrets, but designed to more conveniently support working with strings that do not contain sensitive information.
 
@@ -211,6 +211,9 @@ spec:
 
 ConfigMaps must be created before they are consumed in pods unless they are marked as optional. References to ConfigMaps that do not exist will prevent the pod from starting. Controllers may be written to tolerate missing configuration data; consult individual components configured via ConfigMap on a case-by-case basis.
 
+When a ConfigMap already being consumed in a volume is updated, projected keys are eventually updated as well. Kubelet is checking whether the mounted ConfigMap is fresh on every periodic sync. However, it is using its local ttl-based cache for getting the current value of the ConfigMap. As a result, the total delay from the moment when the ConfigMap is updated to the moment when new keys are projected to the pod can be as long as kubelet sync period + ttl of ConfigMaps cache in kubelet.
+>**Note:** A container using a ConfigMap as a subPath volume will not receive ConfigMap updates.
+
 References via configMapKeyRef to keys that do not exist in a named ConfigMap will prevent the pod from starting.
 
 ConfigMaps used to populate environment variables via envFrom that have keys that are considered invalid environment variable names will have those keys skipped. The pod will be allowed to start. There will be an event whose reason is InvalidVariableNames and the message will contain the list of invalid keys that were skipped.
@@ -224,9 +227,9 @@ First create a file called redis-config:
 mkdir config
 cd config
 cat > redis-config << EOF
-heredoc> maxmemory 2mb
-heredoc> maxmemory-policy allkeys-lru
-heredoc> EOF
+maxmemory 2mb
+maxmemory-policy allkeys-lru
+EOF
 ```
 
 Create a ConfigMap from the file:
