@@ -1,7 +1,7 @@
 # Exercise 1.2 - Deploy a Sidecar Container to enable HTTPS
 
 ## Main application
-For our example main application use a Nodejs Hello World service (evillgenius75/echo-server)
+For our example main application use an echo service that outputs some Lorem text (evillgenius75/echo-server)
 ## Sidecar container 
 To add https support I will use Nginx ssl proxy (evillgenius/tls-sidecar) container
 ## Deployment
