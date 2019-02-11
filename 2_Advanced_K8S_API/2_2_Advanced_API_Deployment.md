@@ -197,11 +197,13 @@ kubectl rollout history deploy nginx-deploy --revision=1
 Now rollback to revision 1.
 
 ```console
-kubectl rollout undo deploy nginx-deploy --to-revision 1
-kubectl describe deploy nginx-deploy
+kubectl rollout undo deploy nginx-deploy --to-revision=1
 ```
 
-```output
+Now the pod is running nginx version 1.7 again. Verify this by executing describe on the deployment.
+
+```command
+kubectl describe deploy nginx-deploy
 Name:                   nginx-deploy
 Namespace:              default
 CreationTimestamp:      Sun, 10 Feb 2019 21:10:23 +0000
@@ -213,8 +215,6 @@ Containers:
     Port:         80/TCP
 ...
 ```
-
-Now the pod is running nginx version 1.7 again.
 
 ## Pod Disruption Budgets
 
