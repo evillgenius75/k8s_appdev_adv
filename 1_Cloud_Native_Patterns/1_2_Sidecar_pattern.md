@@ -72,26 +72,21 @@ NAME                            READY     STATUS    RESTARTS   AGE
 sidecar-ex-686bbff8d7-42mcn   2/2       Running   0          1m
 ```
 ## Testing
-For testing, setup two port forwarding rules. First is for application port and second for nginx HTTPS port:
+For testing, setup a port forwarding rule. This will map a loca port 8043 to the ssl sidecar on port 443:
 
 ```console
 kubectl port-forward <pod> 8043:443 &
 ```
 
-
-Now lets validate that application responds on https and doesn’t respond on http requests
-
-In a new terminal window run:
-```console
-kubectl port-forward <pod> 8030:3000 &
-```
-
-First lets validate that application responds on http and doesn’t respond on https requests
+First lets validate that application does not respond on http and then it does respond on https requests
 
 
 ### Using http
 ```console
-curl -k http://127.0.0.1:8043/lorem 
+curl -k http://127.0.0.1:8043/lorem
+```
+
+```output
 <html>
 <head><title>400 The plain HTTP request was sent to HTTPS port</title></head>
 <body bgcolor="white">
@@ -104,6 +99,9 @@ curl -k http://127.0.0.1:8043/lorem
 ### Using https
 ```console
 curl -k https://127.0.0.1:8043/lorme 
+```
+
+```output
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a scelerisque nisl. Sed placerat finibus ante, non iaculis dui. Etiam viverra, ex sit amet scelerisque lacinia, est nulla egestas lectus, sit amet ullamcorper nisi nisl vitae orci. Fusce et dui facilisis, luctus mauris sed, consequat arcu. Duis porttitor libero id neque dapibus, eget aliquet turpis accumsan. Praesent lectus mauris, tempor eu gravida at, hendrerit nec massa. Vestibulum sed luctus est. Nunc rutrum risus at nisl dictum volutpat. Pellentesque auctor massa tortor, consequat tincidunt tortor bibendum a. Nullam mattis eros eu risus volutpat, id euismod elit facilisis. Vestibulum quis eros a magna accumsan scelerisque vel vel metus. Curabitur at magna cursus, vulputate velit eu, sodales dolor. Duis cursus, tortor in vehicula tempor, quam nisi dictum arcu, eu congue mauris felis quis quam. Vivamus vitae risus venenatis, tincidunt eros ac, posuere purus.
 
 Nunc placerat feugiat hendrerit. Proin ipsum ex, tincidunt sed ante et, pretium ullamcorper mauris. Pellentesque vel dolor sed dolor euismod vestibulum. Cras facilisis non lacus nec tincidunt. Duis pharetra lacinia risus, nec sollicitudin odio. Sed et iaculis sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed ultricies rhoncus nunc, a consequat neque pulvinar id. Phasellus in tincidunt tellus, in blandit sem. Integer interdum vehicula lacus at tincidunt. Donec feugiat ultricies risus, et pellentesque orci porta mattis. Morbi ut nisl ut metus ornare egestas. Donec eget orci vitae justo hendrerit faucibus. Morbi et feugiat velit. Integer at iaculis tellus. Aenean dolor lacus, blandit a tempus eu, malesuada ac massa.
