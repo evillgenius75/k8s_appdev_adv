@@ -8,13 +8,13 @@ The latest Kubernetes adds an important feature called CustomResourceDefinitions
 
 Since this is our last lab let's have some fun! Let's make a Game Server using Kubernetes with Project Agones!
 
-##Lab 5.1 - "Do You Want To Play A Game?"
+## Lab 5.1 - "Do You Want To Play A Game?"
 
 ### Allowing UDP traffic
 For Agones to work correctly, we need to allow UDP traffic to pass through to our AKS cluster. To achieve this, we must update the NSG (Network Security Group) with the proper rule. A simple way to do that is:
 
 ### Login to the Azure Portal
-Find the resource group where the AKS resources are kept, which should have a name like MC_resourceGroupName_AKSName_westeurope. Alternative, you can type az resource show --namespace Microsoft.ContainerService --resource-type managedClusters -g $AKS_RESOURCE_GROUP -n $AKS_NAME -o json | jq .properties.nodeResourceGroup
+Find the resource group where the AKS resources are kept, which should have a name like `MC_resourceGroupName_AKSName_westeurope`. Alternative, you can type `az resource show --namespace Microsoft.ContainerService --resource-type managedClusters -g $AKS_RESOURCE_GROUP -n $AKS_NAME -o json | jq .properties.nodeResourceGroup`
 Find the Network Security Group object, which should have a name like aks-agentpool-********-nsg
 Select Inbound Security Rules
 Select Add to create a new Rule with UDP as the protocol and 7000-8000 as the Destination Port Ranges. Pick a proper name and leave everything else at their default values

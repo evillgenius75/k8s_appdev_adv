@@ -322,7 +322,7 @@ Now drain the node you selected as the one with the most replicas
 >**Note:** You may want to open another browser window with http://shell.azure.com and run the following commands in two seperate shells. Run the watch command first and then drain the node you selected
 
 ```console
-kubectl drain node aks-nodepool1-76410264-0
+kubectl drain <node name> --ignore-daemonsets=true 
 ```
 
   Use the watch command to see the updates happen in real time and you will notice that only a sinle container is evicted at a time to preserve the PDB created.

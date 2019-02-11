@@ -69,7 +69,7 @@ spec:
 
 Save this file to adapter-ex.yaml and create deployment Kubernetes object:
 
-```
+```console
 kubectl create -f adapter-ex.yaml
 ```
 
@@ -93,12 +93,20 @@ Once the pod is running:
 kubectl exec <your-pod-name> -c app-container -it sh
 ``` 
 ### Take a look at what the application is writing
-```   
+```ouput
 cat /var/log/top.txt
 ```   
 ### Take a look at what the adapter has reformatted it to
-```   
+```output
 cat /var/log/status.txt
 ```
 
 Now the logging system can receive the log in the format it expects the data to be in and the original application did not have to be modified in any way.
+
+## Clean Up 
+
+Now delete the Adapter deployment
+
+```console
+kubectl delete -f adapter-ex.yaml
+```
