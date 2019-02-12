@@ -42,7 +42,7 @@ aks-nodepool1-42628860-0   Ready     agent     3h        v1.11.6
 aks-nodepool1-42628860-1   Ready     agent     3h        v1.11.6
 aks-nodepool1-42628860-2   Ready     agent     3h        v1.11.6
 ```
-That will do it, now you are "Ready"--pun intended, for the sultry sounds of Eddie V's voice.
+That will do it, now you are "Ready", pun intended, for the sultry sounds of Eddie V's voice.
 
 
 
