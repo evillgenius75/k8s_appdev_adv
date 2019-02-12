@@ -18,6 +18,8 @@ Get the underlying resource group for the AKS cluster then get the Network Secur
 
 ```console
 RESOURCE_GROUP=$(az group list --output json --query "[?starts_with(name, 'MC_k8s_appdev_adv')].name" | jq .[0] -r)
+```
+```console
 NSG=$(az network nsg list -g $RESOURCE_GROUP --output json --query "[].name" | jq .[0] -r)
 ```
 
@@ -57,6 +59,8 @@ We can install Agones to the cluster using the install.yaml file on GitHub. We w
 
 ```console
 kubectl create namespace agones-system
+```
+```console
 kubectl apply -f https://github.com/GoogleCloudPlatform/agones/raw/release-0.7.0/install/yaml/install.yaml
 ```
 
