@@ -299,10 +299,10 @@ spec:
 ```
 Notice that this pod has a ConfigMap volume that places the redis-config key of the example-redis-config ConfigMap into a file called redis.conf. This volume is mounted into the /redis-master directory in the redis container, placing our config file at /redis-master/redis.conf, which is where the image looks for the redis config file for the master.
 
-Save this file to secret-mysql.yaml and create pod Kubernetes object:
+Save this file to secret-redis.yaml and create pod Kubernetes object:
 
 ```console
-kubectl create -f secret-mysql.yaml
+kubectl create -f secret-redis.yaml
 ```
 
 Wait for pods to be Ready:
@@ -324,13 +324,29 @@ kubectl exec -it redis redis-cli
 ```
 
 ```output
-127.0.0.1:6379> CONFIG GET maxmemory
+127.0.0.1:6379> 
+```
+Get the `maxmemory` entry in the running config:
+```console
+CONFIG GET maxmemory
+```
+```output
 1) "maxmemory"
 2) "2097152"
-127.0.0.1:6379> CONFIG GET maxmemory-policy
+127.0.0.1:6379> 
+```
+Now get the `maxmemory-policy` entry form the running config:
+```console
+CONFIG GET maxmemory-policy
+```
+```output
 1) "maxmemory-policy"
 2) "allkeys-lru"
-127.0.0.1:6379> exit
+127.0.0.1:6379> 
+```
+Exit the CLI:
+```console
+exit
 ```
 ### Secrets
 
