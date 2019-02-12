@@ -183,14 +183,22 @@ NetCat is not installed in the Azure Cloudshell so we will need to temporarily r
  Now use the `nc` command 
 ```console
 nc -u {IP} {PORT}
+```
+Now type a message the game will `ACK` back to you:
+```console
 Hello World !
+```
+```output
 ACK: Hello World !
+```
+If the message returned successfully you can finally type EXIT which tells the SDK to run the Shutdown command, and therefore shuts down the GameServer.
+```console
 EXIT
 ```
 
-You can finally type EXIT which tells the SDK to run the Shutdown command, and therefore shuts down the GameServer.
+If you run `kubectl describe gameserver` again - either the GameServer will be gone completely, or it will be in Shutdown state, on the way to being deleted.
 
-If you run kubectl describe gameserver again - either the GameServer will be gone completely, or it will be in Shutdown state, on the way to being deleted.
+
 
 
 
