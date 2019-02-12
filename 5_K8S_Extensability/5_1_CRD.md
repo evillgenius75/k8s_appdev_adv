@@ -170,7 +170,17 @@ simple-udp   Ready     192.168.99.100   [map[name:default port:7614]]
 You can now communicate with the Game Server:
 
 > NOTE: if you do not have netcat installed (i.e. you get a response of nc: command not found), you can install netcat by running sudo apt install netcat. 
+NetCat is not installed in the Azure Cloudshell so we will need to temporarily run a utility pod that will allow us to do the call
 
+```console
+ kubectl run busybox -i --tty --image=busybox --restart=Never --rm -- sh
+ ```
+ ```output
+ If you don't see a command prompt, try pressing enter.
+/ #
+```
+
+ Now use the `nc` command 
 ```console
 nc -u {IP} {PORT}
 Hello World !
