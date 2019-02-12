@@ -100,6 +100,10 @@ cat /var/log/top.txt
 ```output
 cat /var/log/status.txt
 ```
+### Exit the Pod
+```output
+exit
+```
 
 Now the logging system can receive the log in the format it expects the data to be in and the original application did not have to be modified in any way.
 
