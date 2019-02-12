@@ -13,40 +13,54 @@ Since this is our last lab let's have some fun! Let's make a Game Server using K
 ### Allowing UDP traffic
 For Agones to work correctly, we need to allow UDP traffic to pass through to our AKS cluster. To achieve this, we must update the NSG (Network Security Group) with the proper rule. A simple way to do that is:
 
-### Login to the Azure Portal
-IN the Azure portal find the resource group where the AKS resources are kept, which should have a name like `MC_resourceGroupName_AKSName_westeurope`. Alternative, you can type `az resource show --namespace Microsoft.ContainerService --resource-type managedClusters -g $AKS_RESOURCE_GROUP -n $AKS_NAME -o json | jq .properties.nodeResourceGroup`
-Find the Network Security Group object, which should have a name like aks-agentpool-********-nsg
-Select Inbound Security Rules
-Select Add to create a new Rule with UDP as the protocol and 7000-8000 as the Destination Port Ranges. Pick a proper name and leave everything else at their default values
+#### Update Network Security
+Get the underlying resource group for the AKS cluster then get the Network Security Group that needs updating:
+
+```console
+RESOURCE_GROUP=$(az group list --output json --query "[?starts_with(name, 'MC_k8s_appdev_adv')].name" | jq .[0] -r)
+NSG=$(az network nsg list -g $RESOURCE_GROUP --output json --query "[].name" | jq .[0] -r)
+```
+
+Create a new Rule with UDP as the protocol and 7000-8000 as the Destination Port Ranges. 
+
+```console
+az network nsg rule create --name allow-game-inbound \
+--nsg-name $NSG \
+--resource-group $RESOURCE_GROUP \
+--priority 100 \
+--direction  Inbound \
+--access Allow \
+--protocol UDP \
+--destination-port-ranges 7000-8000
+```
 
 ### Creating and assigning Public IPs to Nodes
-Nodes in AKS don’t get a Public IP by default. To assign a Public IP to a Node, find the Resource Group where the AKS resources are installed on the portal (it should have a name like MC_resourceGroupName_AKSName_westeurope). Run the following yaml to create a DaemonSet that will automatically assign a PublicIP to each node of your cluster.
+Nodes in AKS don’t get a Public IP by default. One way is to manually assign a Public IP to each node by finding the Resource Group where the AKS resources are installed on the portal (it should have a name like MC_resourceGroupName_AKSName_regionName), then adding a Public IP to each VM (this can also be done through the CLI). 
+
+Alternatively, a DaemonSet can be deployed to the cluster that will automatically assign a PublicIP to each node of your cluster. You will use this approach.
 
 ```console
 kubectl create -n kube-system -f https://raw.githubusercontent.com/dgkanatsios/AksNodePublicIPController/master/deploy.yaml
 ```
+
 ### Enabling creation of RBAC resources
 To install Agones, a service account needs permission to create some special RBAC resource types.
 
-
 ```console
 kubectl create clusterrolebinding cluster-admin-binding \
-  --clusterrole=cluster-admin --serviceaccount=kube-system:default
+--clusterrole=cluster-admin \
+--serviceaccount=kube-system:default
 ```
 
 ### Installing Agones
-This will install Agones in your cluster.
-
-We can install Agones to the cluster using the install.yaml file.
+We can install Agones to the cluster using the install.yaml file on GitHub. We will pass the URI to the file. (You can also find the install.yaml in the latest agones-install zip from the releases archive if you prefer that approach.)
 
 ```console
 kubectl create namespace agones-system
 kubectl apply -f https://github.com/GoogleCloudPlatform/agones/raw/release-0.7.0/install/yaml/install.yaml
 ```
 
-You can also find the install.yaml in the latest agones-install zip from the releases archive.
-
-### Confirming Agones started successfully
+#### Confirm that Agones started successfully
 To confirm Agones is up and running, run the following command:
 
 ```console
@@ -54,6 +68,7 @@ kubectl describe --namespace agones-system pods
 ```
 
 It should describe the single pod created in the agones-system namespace, with no error messages or status. The Conditions section should look like this:
+
 ```output
 ...
 Conditions:
@@ -65,7 +80,7 @@ Conditions:
 
 That’s it! This creates the Custom Resource Definitions that power Agones and allows us to define resources of type GameServer.
 
-For the purpose of this guide we’re going to use the simple-udp example as the GameServer container. This example is very simple UDP server written in Go. Don’t hesitate to look at the code of this example for more information.
+For the purpose of this guide we’re going to use the simple-udp example as the GameServer container. It's a very simple UDP server written in Go. Don’t hesitate to look at the code of this example for more information.
 
 ### Create a GameServer
 Let’s create a GameServer using the following command :
@@ -74,10 +89,10 @@ Let’s create a GameServer using the following command :
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/agones/release-0.7.0/examples/simple-udp/gameserver.yaml
 ```
 
-You should see a successful ouput similar to this :
+You should see a successful output similar to this:
 
 ```console
-gameserver "simple-udp" created
+gameserver.stable.agones.dev/simple-udp created
 ```
 
 This has created a GameServer record inside Kubernetes, which has also created a backing Pod to run our simple udp game server code in. If you want to see all your running GameServers you can run:
@@ -143,7 +158,7 @@ You might also be interested to see the Events section, which outlines when vari
 kubectl get gs -o=custom-columns=NAME:.metadata.name,STATUS:.status.state,IP:.status.address,PORT:.status.ports
 ```
 
-This should ouput your Game Server IP address and ports, eg:
+This will output your Game Server IP address and ports, eg:
 
 ```console
 NAME         STATUS    IP               PORT
@@ -152,9 +167,9 @@ simple-udp   Ready     192.168.99.100   [map[name:default port:7614]]
 
 ### Connect to the GameServer
 
-You can now communicate with the Game Server :
+You can now communicate with the Game Server:
 
-NOTE: if you do not have netcat installed (i.e. you get a response of nc: command not found), you can install netcat by running sudo apt install netcat.
+> NOTE: if you do not have netcat installed (i.e. you get a response of nc: command not found), you can install netcat by running sudo apt install netcat. 
 
 ```console
 nc -u {IP} {PORT}
