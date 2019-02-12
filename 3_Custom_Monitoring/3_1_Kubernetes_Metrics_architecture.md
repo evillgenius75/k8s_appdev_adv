@@ -66,7 +66,7 @@ Clone the external metrics adapter project and move into the servicebus example 
 
 ```console
 git clone github.com/Azure/azure-k8s-metrics-adapter
-cd azure-k8s-metrics-adapter/samples/servicebus-queue/samples/servicebus-queue/
+cd azure-k8s-metrics-adapter/samples/servicebus-queue/
 ```
 
 ## Setup Service Bus
@@ -74,8 +74,14 @@ Create a service bus in azure:
 
 ```console
 export SERVICEBUS_NS=sb-external-ns-<your-initials>
+```
+```console
 az group create -n sb-external-example -l eastus
+```
+```console
 az servicebus namespace create -n $SERVICEBUS_NS -g sb-external-example
+```
+```cosnole
 az servicebus queue create -n externalq --namespace-name $SERVICEBUS_NS -g sb-external-example
 ```
 
@@ -160,16 +166,15 @@ received message:  the answer is 42
 
 Deploy the adapter:
 
+Create a Service Principal
 ```console
-helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics 
+az ad sp create-for-rbac 
 ```
 
-
->**Note:** if you used a Service Principal you will need the deployment with a service principal configured and a secret deployed with the service principal values 
->
->```
->helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics --set azureAuthentication.method=clientSecret --set azureAuthentication.tenantID=<your tenantid> --set azureAuthentication.clientID=<your clientID> --set azureAuthentication.clientSecret=<your clientSecret> --set azureAuthentication.createSecret=true`
->```
+Use the output from the result in the fields of the helm chart below:
+```console
+helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics --set azureAuthentication.method=clientSecret --set azureAuthentication.tenantID=<your tenantid> --set azureAuthentication.clientID=<your clientID> --set azureAuthentication.clientSecret=<your clientSecret> --set azureAuthentication.createSecret=true`
+```
 
 
 Check you can hit the external metric endpoint.  The resources will be empty as it [is not implemented yet](https://github.com/Azure/azure-k8s-metrics-adapter/issues/3) but you should receive a result.
@@ -191,6 +196,8 @@ The metric adapter deploys a CRD called ExternalMetric which you can use to conf
 
 ```console
 sed -i 's|sb-external-ns|'${SERVICEBUS_NS}'|g' deploy/externalmetric.yaml
+```
+```console
 kubectl apply -f deploy/externalmetric.yaml
 ```
 
@@ -199,7 +206,7 @@ kubectl apply -f deploy/externalmetric.yaml
 You can list of the configured external metrics via:
 
 ```console
-kubectl get aem #shortcut for externalmetric
+kubectl get aem
 ```
 
 ### Deploy the HPA
@@ -228,7 +235,7 @@ kubectl  get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/default/que
 Put some load on the queue. Note this will add 20,000 message then exit.
 
 ```console
-producer 0
+./sb-producer 0 > /dev/null &
 ```
 
 Now check your queue is loaded:
@@ -277,7 +284,7 @@ consumer   10         10         10            10           23m
 And check out the logs for the consumers:
 
 ```console
-k logs -l app=consumer --tail 100
+kubectl logs -l app=consumer --tail 100
 ```
 
 ## Clean up
