@@ -161,7 +161,7 @@ spec:
 Save this file to security-pod.yaml and create pod Kubernetes object:
 
 ```console
-kubectl create -f security-pod.yaml.yaml
+kubectl create -f security-pod.yaml
 ```
 
 Wait for pods to be Ready:
