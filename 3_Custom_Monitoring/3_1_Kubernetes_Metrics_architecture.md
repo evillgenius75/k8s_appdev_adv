@@ -85,7 +85,7 @@ az servicebus namespace create -n $SERVICEBUS_NS -g sb-external-example
 az servicebus queue create -n externalq --namespace-name $SERVICEBUS_NS -g sb-external-example
 ```
 
-Create an auth rules for queue:
+Create an auth rule for queue:
 
 ```console
 az servicebus queue authorization-rule create --resource-group sb-external-example --namespace-name $SERVICEBUS_NS --queue-name externalq  --name demorule --rights Listen Manage Send
@@ -173,7 +173,7 @@ az ad sp create-for-rbac
 
 Use the output from the result in the fields of the helm chart below:
 ```console
-helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics --set azureAuthentication.method=clientSecret --set azureAuthentication.tenantID=<your tenantid> --set azureAuthentication.clientID=<your clientID> --set azureAuthentication.clientSecret=<your clientSecret> --set azureAuthentication.createSecret=true`
+helm install --name sample-release ../../charts/azure-k8s-metrics-adapter --namespace custom-metrics --set azureAuthentication.method=clientSecret --set azureAuthentication.tenantID=<your tenantid> --set azureAuthentication.clientID=<your clientID> --set azureAuthentication.clientSecret=<your clientSecret> --set azureAuthentication.createSecret=true
 ```
 
 
