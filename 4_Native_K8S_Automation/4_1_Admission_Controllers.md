@@ -19,7 +19,7 @@ If any of the controllers in either phase reject the request, the entire request
 Finally, in addition to sometimes mutating the object in question, admission controllers may sometimes have side effects, that is, mutate related resources as part of request processing. Incrementing quota usage is the canonical example of why this is necessary. Any such side-effect needs a corresponding reclamation or reconciliation process, as a given admission controller does not know for sure that a given request will pass all of the other admission controllers.
 
 ### MutatingAdmissionWebhook
-This admission controller (as implied by the name) only runs in the mutating phase. It calls any mutating webhooks which match the request. Matching webhooks are called serially; each one may modify the object if it desires.
+This admission controller (as implied by the name) only runs in the mutating phase. It calls any mutating webhooks which match the request. Matching webhooks are called serially - each one may modify the object if it desires.
 
 If a webhook called by this controller has side effects (for example, decrementing quota) it must have a reconciliation system, as it is not guaranteed that subsequent webhooks or validating admission controllers will permit the request to finish.
 
@@ -39,7 +39,7 @@ If a webhook called by this has side effects (for example, decrementing quota) i
 
 If you disable the ValidatingAdmissionWebhook, you must also disable the ValidatingWebhookConfiguration object in the admissionregistration.k8s.io/v1beta1 group/version via the --runtime-config flag (both are on by default in versions 1.9 and later).
 
-## Lab 4.1 - Use a MuatatingAdmissionWebhook to make all services tht are of type LoadBalancer to be Internal type
+## Lab 4.1 - Use a MuatatingAdmissionWebhook to make all services that are of type LoadBalancer to be Internal type
 
 Clone the following repo for the AdmissionController Helm Chart
 
