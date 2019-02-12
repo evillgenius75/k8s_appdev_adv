@@ -59,16 +59,16 @@ nginx-deploy-6bbdfbd484-7x8kp       1/1       Running   0          45s
 `ctrl+c to` exit the wait state
 
 ## Update Strategy
-using deployments gives you the following benefits:
+Using deployments gives you the following benefits:
 * Seamless replication and declarative system states
 * the ability to update your application with minimal downtime 
 * track multiple versions of your deployment environment.
 
-When a deployment's configuration changes—for example by updating the image used by its pods—Kubernetes detects this change and executes steps to reconcile the system state with the configuration change. The mechanism by which Kubernetes executes these updates is determined by the deployment's `strategy.type` field.
+When a deployment's configuration changes, for example by updating the image used by its pods, Kubernetes detects this change and executes steps to reconcile the system state with the configuration change. The mechanism by which Kubernetes executes these updates is determined by the deployment's `strategy.type` field.
 
 ### Recreate
 
-With the Recreate strategy, all running pods in the deployment are killed, and new pods are created in their place. This does not guarantee zero- downtime, but can be useful in case you are not able to have multiple versions of your application running simultaneously.
+With the Recreate strategy, all running pods in the deployment are killed, and new pods are created in their place. This does not guarantee zero-downtime, but can be useful in case you are not able to have multiple versions of your application running simultaneously.
 
 ### Lab 2.7 - Update a deployment with Recreate Strategy and update container.
 
@@ -93,7 +93,7 @@ strategy:
 save the file using vi commands and now inspect the deployment to verify the change was made
 
 ```console
-kubetctl get deploy nginx-deploy -o yaml
+kubectl get deploy nginx-deploy -o yaml
 ```
 
 Now scale the deployment to 6 replicas
@@ -120,7 +120,7 @@ kubectl set image deploy nginx-deploy nginx=nginx:1.9 --record=true
 kubectl get pods -w
 ```
 
-What you should see is all of the original pods be terminated and then deleted, and rather quickly 6 new pods pods being created with the new version of nginx.
+What you should see is all of the original pods being terminated and then deleted, and rather quickly 6 new pods being created with the new version of nginx.
 
 #### RollingUpdate
 
@@ -229,7 +229,7 @@ We call these unavoidable cases **involuntary** disruptions to an application. E
   * the node disappears from the cluster due to cluster network partition
   * eviction of a pod due to the node being out-of-resources.
 
-We call other cases **voluntary** disruptions. These include both actions initiated by the application owner and those initiated by a Cluster Administrator. Typical application owner actions include:
+We call other cases **voluntary** disruptions. These include both actions initiated by the application owner and those initiated by a cluster administrator. Typical application owner actions include:
 
   * deleting the deployment or other controller that manages the pod
   * updating a deployment’s pod template causing a restart
