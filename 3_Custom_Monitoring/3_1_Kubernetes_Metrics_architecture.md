@@ -65,7 +65,7 @@ helm init --service-account tiller
 Clone the external metrics adapter project and move into the servicebus example directory:
 
 ```console
-git clone github.com/Azure/azure-k8s-metrics-adapter
+git clone https://github.com/Azure/azure-k8s-metrics-adapter
 cd azure-k8s-metrics-adapter/samples/servicebus-queue/
 ```
 
