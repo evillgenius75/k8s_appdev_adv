@@ -14,6 +14,7 @@ If cloud shell timeouts get your ire up, feel free to install these tools and ru
 * Helm
 * Kubernetes CLI (kubectl)
 * git tools
+* jq - tool for querying json objects in bash - [link](https://stedolan.github.io/jq/)
 
 > **NOTE:**
 > Windows users beware! You might want to use ~~powershell~~ bash flavored cloud shell as some of the tools are difficult to get running on Win10.
